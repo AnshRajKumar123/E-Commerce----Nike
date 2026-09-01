@@ -1,0 +1,194 @@
+/* ==========================================================================
+   ❤️ NIKE WISHLIST / FAVORITES STYLES
+   ========================================================================== */
+.WishlistPageWrapper {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2.5rem 48px 6rem 48px;
+}
+
+.WishlistHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1.5rem;
+}
+
+.WishlistHeading {
+    font-family: var(--Font3);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 4px 0 0 0;
+}
+
+/* Empty State */
+.EmptyWishlistState {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.EmptyHeartCircle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin-bottom: 1.5rem;
+}
+
+.EmptyWishlistState h2 {
+    font-family: var(--Font3);
+    font-size: 24px;
+    color: var(--accent-dark-blue);
+    margin: 0 0 8px 0;
+}
+
+.EmptyWishlistState p {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 420px;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+/* Wishlist Grid */
+.WishlistGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.WishlistCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.WishlistCard:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.WishlistMedia {
+    position: relative;
+    height: 220px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.WishlistMedia img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    transform: rotate(-14deg);
+    transition: transform 0.3s ease;
+}
+
+.WishlistCard:hover .WishlistMedia img {
+    transform: rotate(-10deg) scale(1.08);
+}
+
+.WishlistRemoveBtn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease;
+}
+
+.WishlistRemoveBtn:hover {
+    transform: scale(1.15);
+}
+
+.WishlistBody {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.WishlistFooterRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.MoveToBagBtn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.MoveToBagBtn:hover {
+    background: var(--accent-light-blue);
+}
+
+@media (max-width: 1200px) {
+    .WishlistGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .WishlistPageWrapper {
+        padding: 1.5rem 20px 4rem 20px;
+    }
+
+    .WishlistGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .WishlistGrid {
+        grid-template-columns: 1fr;
+    }
+}

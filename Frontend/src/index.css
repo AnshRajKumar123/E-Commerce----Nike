@@ -1,0 +1,69 @@
+/* ==========================================================================
+   🌐 GOOGLE FONTS & BOXICONS ENGINE IMPORTS
+   ========================================================================== */
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Moon+Dance&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap');
+
+/* ==========================================================================
+   🎨 DESIGN TOKENS & TYPOGRAPHY SYSTEM
+   ========================================================================== */
+:root {
+    /* Font Family Definitions */
+    --Primary_Font: "Moon Dance", cursive;
+    --Font1: "Quicksand", sans-serif;
+    --Font2: "Dancing Script", cursive;
+    --Font3: "Libertinus Sans", sans-serif;
+    --Font4: "Playwrite HU", cursive;
+
+    /* Color System */
+    --bg-main: #f0f7ff;
+    --bg-surface: #ffffff;
+    --bg-surface-glass: rgba(255, 255, 255, 0.88);
+
+    --accent-light-blue: #38bdf8;
+    --accent-light-soft: #e0f2fe;
+    --accent-cyan: #06b6d4;
+
+    --accent-dark-blue: #0c1e3d;
+    --accent-dark-hover: #162f5d;
+
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-white: #ffffff;
+
+    --border-light: rgba(56, 189, 248, 0.2);
+    --border-glass: rgba(255, 255, 255, 0.8);
+    --shadow-soft: 0 10px 30px rgba(12, 30, 61, 0.06);
+    --shadow-elevated: 0 20px 45px rgba(12, 30, 61, 0.12);
+}
+
+/* ==========================================================================
+   RESET & GLOBAL BASE RULES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--Font1);
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+}

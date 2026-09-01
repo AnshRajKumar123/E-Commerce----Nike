@@ -1,0 +1,443 @@
+.SingleProductPageWrapper {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2rem 48px 6rem 48px;
+}
+
+.CartNotificationToast {
+    position: fixed;
+    top: 90px;
+    right: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    padding: 14px 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-elevated);
+    z-index: 9999;
+    animation: slideInRight 0.3s ease;
+}
+
+.CartNotificationToast i {
+    color: var(--accent-light-blue);
+    font-size: 22px;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.ProductBreadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.ProductBreadcrumb a:hover {
+    color: var(--accent-light-blue);
+}
+
+.CurrentTitle {
+    color: var(--accent-dark-blue);
+}
+
+.SingleProductGrid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+.ProductGallerySection {
+    display: flex;
+    gap: 18px;
+}
+
+.ThumbnailTrack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ThumbnailBtn {
+    width: 76px;
+    height: 76px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ThumbnailBtn img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.ThumbnailBtn:hover,
+.ThumbnailBtn.active {
+    border-color: var(--accent-dark-blue);
+    transform: scale(1.04);
+}
+
+.MainDisplayFrame {
+    position: relative;
+    flex: 1;
+    height: 520px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-light-soft) 100%);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.MainLargeImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform: rotate(-14deg);
+    filter: drop-shadow(0 25px 30px rgba(12, 30, 61, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.BigCardBadge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.ProductSpecsSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.ProductSubCategory {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent-light-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.ProductMainTitle {
+    font-family: var(--Font3);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 4px 0 10px 0;
+    line-height: 1.15;
+}
+
+.RatingAndReviewsRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.StarBlock {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fef3c7;
+    color: #d97706;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.ReviewCount {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.ProductPriceBlock {
+    margin-bottom: 1.5rem;
+}
+
+.PriceMRP {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.PriceFlex {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+}
+
+.CurrentPrice {
+    font-family: var(--Font3);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+}
+
+.StrikedPrice {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.ProductDetailedDesc {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.SizeSelectionBlock {
+    margin-bottom: 2rem;
+}
+
+.SizeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.SizeTitle {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-dark-blue);
+}
+
+.SizeGuideBtn {
+    background: none;
+    border: none;
+    color: var(--accent-light-blue);
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.SizesGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.SizeChip {
+    padding: 12px 0;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.SizeChip:hover,
+.SizeChip.selected {
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    border-color: var(--accent-dark-blue);
+}
+
+.QuantitySelectionRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 2.2rem;
+}
+
+.QtyLabel {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent-dark-blue);
+}
+
+.Stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.Stepper button {
+    width: 38px;
+    height: 38px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--accent-dark-blue);
+}
+
+.Stepper span {
+    width: 34px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.ActionsButtonDeck {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 2.5rem;
+}
+
+.AddToCartBtn {
+    flex: 1;
+    height: 52px;
+    border-radius: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(12, 30, 61, 0.25);
+    transition: all 0.25s ease;
+}
+
+.AddToCartBtn:hover {
+    background: var(--accent-light-blue);
+    transform: translateY(-2px);
+}
+
+.WishlistBtn {
+    height: 52px;
+    padding: 0 24px;
+    border-radius: 30px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    color: var(--accent-dark-blue);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.WishlistBtn:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.ShippingPerksList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.5rem;
+}
+
+.PerkItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.PerkItem i {
+    font-size: 24px;
+    color: var(--accent-light-blue);
+}
+
+.PerkItem strong {
+    font-size: 13.5px;
+    color: var(--accent-dark-blue);
+}
+
+.PerkItem p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.RelatedProductsSection {
+    margin-top: 6rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 4rem;
+}
+
+.RelatedProductsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 2rem;
+}
+
+@media (max-width: 1100px) {
+    .SingleProductGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .RelatedProductsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .SingleProductPageWrapper {
+        padding: 1.5rem 20px 4rem 20px;
+    }
+
+    .ProductGallerySection {
+        flex-direction: column-reverse;
+    }
+
+    .ThumbnailTrack {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .MainDisplayFrame {
+        height: 380px;
+    }
+
+    .RelatedProductsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.WishlistBtn.favorited {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fef2f2;
+}

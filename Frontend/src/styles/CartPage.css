@@ -1,0 +1,460 @@
+/* ==========================================================================
+   🛍️ NIKE E-COMMERCE CART / BAG STYLES
+   ========================================================================== */
+.CartPageWrapper {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2.5rem 48px 6rem 48px;
+}
+
+.CartHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1.5rem;
+}
+
+.CartHeading {
+    font-family: var(--Font3);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 4px 0 0 0;
+}
+
+.ContinueShoppingLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--accent-dark-blue);
+    transition: color 0.2s ease;
+}
+
+.ContinueShoppingLink:hover {
+    color: var(--accent-light-blue);
+}
+
+/* Empty State */
+.EmptyCartState {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.EmptyIconCircle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-light-soft);
+    color: var(--accent-dark-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin-bottom: 1.5rem;
+}
+
+.EmptyCartState h2 {
+    font-family: var(--Font3);
+    font-size: 24px;
+    color: var(--accent-dark-blue);
+    margin: 0 0 8px 0;
+}
+
+.EmptyCartState p {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 420px;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+.ExploreDropsBtn {
+    padding: 13px 32px;
+    border-radius: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(12, 30, 61, 0.2);
+    transition: all 0.25s ease;
+}
+
+.ExploreDropsBtn:hover {
+    background: var(--accent-light-blue);
+    transform: translateY(-2px);
+}
+
+/* Cart Grid */
+.CartGridContainer {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3.5rem;
+    align-items: start;
+}
+
+.CartItemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.CartItemCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    transition: border-color 0.2s ease;
+}
+
+.CartItemCard:hover {
+    border-color: var(--accent-light-blue);
+}
+
+.CartItemThumb {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.CartItemThumb img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform: rotate(-12deg);
+    transition: transform 0.3s ease;
+}
+
+.CartItemThumb:hover img {
+    transform: rotate(-8deg) scale(1.08);
+}
+
+.CartItemDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ItemCategory {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.ItemTitle {
+    font-family: var(--Font3);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 2px 0 0 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.ItemTitle:hover {
+    color: var(--accent-light-blue);
+}
+
+.ItemSpecs {
+    display: flex;
+    gap: 14px;
+}
+
+.SpecTag {
+    font-size: 12.5px;
+    color: var(--text-muted);
+}
+
+.SpecTag strong {
+    color: var(--accent-dark-blue);
+}
+
+.ItemControlsRow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 4px;
+}
+
+.ItemQtyStepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.ItemQtyStepper button {
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--accent-dark-blue);
+}
+
+.ItemQtyStepper span {
+    width: 28px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ItemActionIcons {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ActionLinkBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+}
+
+.ActionLinkBtn:hover {
+    color: var(--accent-dark-blue);
+}
+
+.DeleteBtn:hover {
+    color: #ef4444;
+}
+
+.CartItemPrice {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+
+.CartItemPrice strong {
+    font-family: var(--Font3);
+    font-size: 18px;
+    color: var(--accent-dark-blue);
+}
+
+.CartItemPrice small {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Sidebar Order Summary */
+.CartSummarySidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.SummaryCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.SummaryTitle {
+    font-family: var(--Font3);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 0 0 8px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.SummaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.SummaryRow strong {
+    color: var(--accent-dark-blue);
+    font-size: 15px;
+}
+
+.DiscountRow {
+    color: #16a34a;
+}
+
+.DiscountRow strong {
+    color: #16a34a;
+}
+
+.SummaryDivider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 4px 0;
+}
+
+.TotalRow {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--accent-dark-blue);
+}
+
+.TotalFigure {
+    font-family: var(--Font3);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+}
+
+.PromoInputGroup {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.PromoInputGroup input {
+    flex: 1;
+    height: 42px;
+    background: var(--accent-light-soft);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 13px;
+    outline: none;
+    text-transform: uppercase;
+}
+
+.PromoInputGroup input:focus {
+    border-color: var(--accent-light-blue);
+}
+
+.PromoInputGroup button {
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+}
+
+.PromoInputGroup button:hover {
+    background: var(--accent-light-blue);
+}
+
+.CheckoutButton {
+    width: 100%;
+    height: 52px;
+    border-radius: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    box-shadow: 0 8px 24px rgba(12, 30, 61, 0.25);
+    transition: all 0.25s ease;
+}
+
+.CheckoutButton:hover {
+    background: var(--accent-light-blue);
+    transform: translateY(-2px);
+}
+
+.SecurityAssurances {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-light);
+}
+
+.AssuranceItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.AssuranceItem i {
+    color: var(--accent-light-blue);
+    font-size: 16px;
+}
+
+@media (max-width: 992px) {
+    .CartGridContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .CartSummarySidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .CartPageWrapper {
+        padding: 1.5rem 18px 4rem 18px;
+    }
+
+    .CartItemCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .CartItemThumb {
+        width: 100%;
+        height: 180px;
+    }
+
+    .CartItemPrice {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+    }
+}

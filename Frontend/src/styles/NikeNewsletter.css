@@ -1,0 +1,135 @@
+.NewsletterSectionWrapper {
+    max-width: 1500px;
+    margin: 5rem auto 0 auto;
+    padding: 0 48px;
+}
+
+.NewsletterContainer {
+    background: linear-gradient(135deg, var(--accent-dark-blue) 0%, #162f5d 100%);
+    border-radius: 28px;
+    padding: 3.5rem 4rem;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+    box-shadow: var(--shadow-elevated);
+}
+
+.NewsletterTag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--accent-light-blue);
+}
+
+.NewsletterLeft h2 {
+    font-family: var(--Font3);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin: 6px 0 10px 0;
+}
+
+.NewsletterLeft p {
+    font-size: 14.5px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 480px;
+}
+
+.NewsletterForm {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.EmailInputBox {
+    flex: 1;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.EmailInputBox:focus-within {
+    border-color: var(--accent-light-blue);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.EmailInputBox i {
+    color: #94a3b8;
+    font-size: 20px;
+}
+
+.EmailInputBox input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.EmailInputBox input::placeholder {
+    color: #94a3b8;
+}
+
+.SubscribeBtn {
+    height: 52px;
+    padding: 0 30px;
+    border-radius: 30px;
+    background: var(--accent-light-blue);
+    color: var(--accent-dark-blue);
+    border: none;
+    font-size: 14.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.SubscribeBtn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+}
+
+.SubscriptionSuccess {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent-light-blue);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.SubscriptionSuccess i {
+    font-size: 24px;
+}
+
+@media (max-width: 992px) {
+    .NewsletterContainer {
+        grid-template-columns: 1fr;
+        padding: 2.5rem 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .NewsletterForm {
+        flex-direction: column;
+    }
+
+    .EmailInputBox,
+    .SubscribeBtn {
+        width: 100%;
+        justify-content: center;
+    }
+}
