@@ -16,6 +16,7 @@ import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import OrdersPage from "./pages/OrdersPage";
+import AuthPage from "./pages/AuthPage";
 
 const HomeLanding = () => (
     <>
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/login" element={<AuthPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/orders" element={<OrdersPage />} />
                     <Route path="/product/:productId" element={<SingleProductPage />} />
