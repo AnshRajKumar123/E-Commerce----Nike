@@ -379,7 +379,6 @@ const CheckoutPage = () => {
                                 <span className="BarcodeCodeNumber">TXN-7451188122-BM</span>
                             </div>
 
-                            <div className="SawtoothTearEdge"></div>
                         </div>
 
                         <div className="ReceiptBottomControls">
