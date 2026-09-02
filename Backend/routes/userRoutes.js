@@ -6,11 +6,14 @@ import {
     updateUserProfile,
 } from "../controllers/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { syncUserState } from "../controllers/userController.js";
 
 const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
+
+router.put("/sync-state", protect, syncUserState);
 
 export default router;

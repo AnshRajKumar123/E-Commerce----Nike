@@ -134,3 +134,22 @@ export const updateUserProfile = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Sync Cart & Wishlist to User document
+// @route   PUT /api/users/sync-state
+export const syncUserState = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (req.body.cart !== undefined) user.cart = req.body.cart;
+        if (req.body.wishlist !== undefined) user.wishlist = req.body.wishlist;
+
+        await user.save();
+        res.json({ success: true, cart: user.cart, wishlist: user.wishlist });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

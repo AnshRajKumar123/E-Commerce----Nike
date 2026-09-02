@@ -40,11 +40,15 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+import orderRoutes from "./routes/orderRoutes.js";
+
 // 4. Database connection
 connectDB();
 
 // 5. API Routes
 app.use("/api/users", userRoutes);
+
+app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
     res.send("Nike Store API Running");

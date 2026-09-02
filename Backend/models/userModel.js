@@ -19,21 +19,22 @@ const userSchema = new mongoose.Schema(
             required: [true, "Password is required"],
             minlength: 6,
         },
-        phone: {
-            type: String,
-            default: "",
+
+        phone: { type: String, default: "" },
+
+        address: { type: String, default: "" },
+
+        city: { type: String, default: "" },
+
+        postalCode: { type: String, default: "" },
+        
+        cart: {
+            type: Array,
+            default: [],
         },
-        address: {
-            type: String,
-            default: "",
-        },
-        city: {
-            type: String,
-            default: "",
-        },
-        postalCode: {
-            type: String,
-            default: "",
+        wishlist: {
+            type: Array,
+            default: [],
         },
     },
     { timestamps: true }
