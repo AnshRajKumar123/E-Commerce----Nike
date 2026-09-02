@@ -9,17 +9,23 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const { cartItems, clearCart, userProfile } = useShop();
 
-    const checkoutData = location.state || {
-        cartItems: cartItems.length > 0 ? cartItems : [],
-        subtotal: 13995,
-        discount: 0,
-        taxAmount: 699.75,
-        tip: 50,
-        deliveryFee: 0,
-        grandTotal: 14745,
-    };
+    // Active checkout ledger state
+    const [activeCheckoutData, setActiveCheckoutData] = useState(
+        location.state || {
+            cartItems: cartItems.length > 0 ? cartItems : [],
+            subtotal: cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+            discount: 0,
+            taxAmount: 0,
+            tip: 0,
+            deliveryFee: 0,
+            grandTotal: 0,
+        }
+    );
 
-    // Defaults to saved userProfile values or empty strings
+    // Snapshot state dedicated to the thermal receipt
+    const [receiptSnapshot, setReceiptSnapshot] = useState(null);
+
+    // Form inputs state
     const [shippingInfo, setShippingInfo] = useState({
         fullName: userProfile?.fullName || "",
         email: userProfile?.email || "",
@@ -39,7 +45,39 @@ const CheckoutPage = () => {
 
     const handleProcessPayment = (e) => {
         e.preventDefault();
+
+        // 1. Snapshot the order details for the receipt
+        setReceiptSnapshot({
+            ...activeCheckoutData,
+            clientName: shippingInfo.fullName || "GUEST",
+        });
+
+        // 2. Clear global cart & storage
         clearCart();
+
+        // 3. Reset form inputs
+        setShippingInfo({
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            city: "",
+            postalCode: "",
+            paymentMethod: "Card",
+        });
+
+        // 4. Reset checkout summary ledger
+        setActiveCheckoutData({
+            cartItems: [],
+            subtotal: 0,
+            discount: 0,
+            taxAmount: 0,
+            tip: 0,
+            deliveryFee: 0,
+            grandTotal: 0,
+        });
+
+        // 5. Display the thermal receipt
         setShowReceipt(true);
     };
 
@@ -48,7 +86,8 @@ const CheckoutPage = () => {
     };
 
     const handleCopyReceipt = () => {
-        const text = `NIKE DIGITAL OFFICIAL RECEIPT\nClient: ${shippingInfo.fullName || "GUEST"}\nTotal: ₹${checkoutData.grandTotal.toLocaleString("en-IN")}\nTXN-7451188122-BM`;
+        if (!receiptSnapshot) return;
+        const text = `NIKE DIGITAL OFFICIAL RECEIPT\nClient: ${receiptSnapshot.clientName}\nTotal: ₹${receiptSnapshot.grandTotal.toLocaleString("en-IN")}\nTXN-7451188122-BM`;
         navigator.clipboard.writeText(text);
         alert("Receipt details copied to clipboard!");
     };
@@ -184,29 +223,35 @@ const CheckoutPage = () => {
                 {/* RIGHT: ORDER SUMMARY */}
                 <div className="CheckoutSummaryColumn">
                     <div className="CheckoutSummaryCard">
-                        <h3>Review Order ({checkoutData.cartItems.length})</h3>
+                        <h3>Review Order ({activeCheckoutData.cartItems.length})</h3>
 
                         <div className="OrderMiniItemsList">
-                            {checkoutData.cartItems.map((item) => (
-                                <div
-                                    key={`${item.id}-${item.selectedSize}`}
-                                    className="MiniItemRow"
-                                >
-                                    <img
-                                        src={item.images?.[0] || item.image}
-                                        alt={item.title}
-                                    />
-                                    <div className="MiniItemMeta">
-                                        <strong>{item.title}</strong>
-                                        <small>
-                                            Qty: {item.quantity} | UK {item.selectedSize}
-                                        </small>
+                            {activeCheckoutData.cartItems.length === 0 ? (
+                                <p style={{ color: "var(--text-muted)", fontSize: "13.5px", margin: "1rem 0" }}>
+                                    No items in queue.
+                                </p>
+                            ) : (
+                                activeCheckoutData.cartItems.map((item) => (
+                                    <div
+                                        key={`${item.id}-${item.selectedSize}`}
+                                        className="MiniItemRow"
+                                    >
+                                        <img
+                                            src={item.images?.[0] || item.image}
+                                            alt={item.title}
+                                        />
+                                        <div className="MiniItemMeta">
+                                            <strong>{item.title}</strong>
+                                            <small>
+                                                Qty: {item.quantity} | UK {item.selectedSize}
+                                            </small>
+                                        </div>
+                                        <span>
+                                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                                        </span>
                                     </div>
-                                    <span>
-                                        ₹{(item.price * item.quantity).toLocaleString("en-IN")}
-                                    </span>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
 
                         <div className="SummaryDivider"></div>
@@ -214,32 +259,32 @@ const CheckoutPage = () => {
                         <div className="LedgerBreakdown">
                             <div className="BreakdownRow">
                                 <span>Subtotal</span>
-                                <span>₹{checkoutData.subtotal.toLocaleString("en-IN")}</span>
+                                <span>₹{activeCheckoutData.subtotal.toLocaleString("en-IN")}</span>
                             </div>
-                            {checkoutData.discount > 0 && (
+                            {activeCheckoutData.discount > 0 && (
                                 <div className="BreakdownRow DiscountText">
                                     <span>Discount (Promo)</span>
                                     <span>
-                                        -₹{checkoutData.discount.toLocaleString("en-IN")}
+                                        -₹{activeCheckoutData.discount.toLocaleString("en-IN")}
                                     </span>
                                 </div>
                             )}
                             <div className="BreakdownRow">
                                 <span>Gratuity (Tip)</span>
-                                <span>+₹{checkoutData.tip}</span>
+                                <span>+₹{activeCheckoutData.tip}</span>
                             </div>
                             <div className="BreakdownRow">
                                 <span>Tax (5% GST)</span>
                                 <span>
-                                    ₹{Math.round(checkoutData.taxAmount).toLocaleString("en-IN")}
+                                    ₹{Math.round(activeCheckoutData.taxAmount).toLocaleString("en-IN")}
                                 </span>
                             </div>
                             <div className="BreakdownRow">
                                 <span>Delivery</span>
                                 <span>
-                                    {checkoutData.deliveryFee === 0
+                                    {activeCheckoutData.deliveryFee === 0
                                         ? "FREE"
-                                        : `₹${checkoutData.deliveryFee}`}
+                                        : `₹${activeCheckoutData.deliveryFee}`}
                                 </span>
                             </div>
 
@@ -248,7 +293,7 @@ const CheckoutPage = () => {
                             <div className="GrandTotalRow">
                                 <span>GRAND TOTAL</span>
                                 <span className="FinalAmount">
-                                    ₹{checkoutData.grandTotal.toLocaleString("en-IN")}
+                                    ₹{activeCheckoutData.grandTotal.toLocaleString("en-IN")}
                                 </span>
                             </div>
                         </div>
@@ -257,10 +302,11 @@ const CheckoutPage = () => {
                             type="submit"
                             form="checkout-form"
                             className="PayNowButton"
+                            disabled={activeCheckoutData.grandTotal === 0 && !showReceipt}
                         >
                             <span>
                                 Authorize & Pay ₹
-                                {checkoutData.grandTotal.toLocaleString("en-IN")}
+                                {activeCheckoutData.grandTotal.toLocaleString("en-IN")}
                             </span>
                             <i className="bx bx-check-shield"></i>
                         </button>
@@ -269,31 +315,28 @@ const CheckoutPage = () => {
             </div>
 
             {/* POS DISPENSER PRINTER THERMAL RECEIPT MODAL */}
-            {showReceipt && (
+            {showReceipt && receiptSnapshot && (
                 <div className="ReceiptOverlayBackdrop">
                     <div className="POSReceiptStage">
                         <div className="POSPrinterDispenserCap">
                             <div className="PrinterSlit"></div>
                         </div>
 
-                        <div
-                            className={`POSThermalReceiptPaper ${receiptTorn ? "torn-effect" : ""
-                                }`}
-                        >
+                        <div className={`POSThermalReceiptPaper ${receiptTorn ? "torn-effect" : ""}`}>
                             <div className="ReceiptHeaderSection">
                                 <div className="ReceiptBrandText">
                                     <h2>NIKE SPORTSWEAR</h2>
                                     <p>DIGITAL OFFICIAL RECEIPT</p>
                                 </div>
                                 <div className="ReceiptBrandLogo">
-                                    <img src={nikeGeneral.WebLogo} />
+                                    <img src={nikeGeneral.WebLogo} alt="Nike Logo" />
                                 </div>
                             </div>
 
                             <div className="ReceiptClientAndStamp">
                                 <div className="ClientMeta">
                                     <span className="ClientTag">
-                                        CLIENT: {shippingInfo.fullName.toUpperCase() || "GUEST"}
+                                        CLIENT: {receiptSnapshot.clientName.toUpperCase()}
                                     </span>
                                     <div className="CardNumberMask">Visa-•••• 8842</div>
                                 </div>
@@ -305,14 +348,14 @@ const CheckoutPage = () => {
                             </div>
 
                             <div className="ReceiptHeroPrice">
-                                <h1>₹{checkoutData.grandTotal.toLocaleString("en-IN")}</h1>
+                                <h1>₹{receiptSnapshot.grandTotal.toLocaleString("en-IN")}</h1>
                                 <p>{currentDate} | INVOICE PAID</p>
                             </div>
 
                             <div className="ReceiptDottedLine"></div>
 
                             <div className="ReceiptItemsBlock">
-                                {checkoutData.cartItems.map((item) => (
+                                {receiptSnapshot.cartItems.map((item) => (
                                     <div
                                         key={`${item.id}-${item.selectedSize}`}
                                         className="ReceiptItemRow"
@@ -332,24 +375,24 @@ const CheckoutPage = () => {
                             <div className="ReceiptFinancialLedger">
                                 <div className="FinRow">
                                     <span>Subtotal</span>
-                                    <span>₹{checkoutData.subtotal.toLocaleString("en-IN")}</span>
+                                    <span>₹{receiptSnapshot.subtotal.toLocaleString("en-IN")}</span>
                                 </div>
-                                {checkoutData.discount > 0 && (
+                                {receiptSnapshot.discount > 0 && (
                                     <div className="FinRow">
                                         <span>Discount (Promo)</span>
                                         <span>
-                                            -₹{checkoutData.discount.toLocaleString("en-IN")}
+                                            -₹{receiptSnapshot.discount.toLocaleString("en-IN")}
                                         </span>
                                     </div>
                                 )}
                                 <div className="FinRow">
                                     <span>Gratuity (Tip)</span>
-                                    <span>+₹{checkoutData.tip}</span>
+                                    <span>+₹{receiptSnapshot.tip}</span>
                                 </div>
                                 <div className="FinRow">
                                     <span>Tax (5%)</span>
                                     <span>
-                                        ₹{Math.round(checkoutData.taxAmount).toLocaleString("en-IN")}
+                                        ₹{Math.round(receiptSnapshot.taxAmount).toLocaleString("en-IN")}
                                     </span>
                                 </div>
                             </div>
@@ -359,7 +402,7 @@ const CheckoutPage = () => {
                             <div className="ReceiptGrandTotalRow">
                                 <span>GRAND TOTAL</span>
                                 <strong>
-                                    ₹{checkoutData.grandTotal.toLocaleString("en-IN")}
+                                    ₹{receiptSnapshot.grandTotal.toLocaleString("en-IN")}
                                 </strong>
                             </div>
 
@@ -378,7 +421,6 @@ const CheckoutPage = () => {
                                 </div>
                                 <span className="BarcodeCodeNumber">TXN-7451188122-BM</span>
                             </div>
-
                         </div>
 
                         <div className="ReceiptBottomControls">
