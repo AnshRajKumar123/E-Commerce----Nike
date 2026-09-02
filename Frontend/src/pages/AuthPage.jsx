@@ -29,9 +29,7 @@ const AuthPage = () => {
         setLoading(true);
         setErrorMsg("");
 
-        const endpoint = isLogin
-            ? "http://localhost:5000/api/users/login"
-            : "http://localhost:5000/api/users/register";
+        const endpoint = isLogin ? "/api/users/login" : "/api/users/register";
 
         try {
             const response = await fetch(endpoint, {

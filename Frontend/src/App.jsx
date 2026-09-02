@@ -1,6 +1,6 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { ShopProvider } from "./context/ShopContext";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ShopProvider, useShop } from "./context/ShopContext";
 import ScrollToTop from "./components/ScrollToTop";
 import NikeNavbar from "./components/NikeNavbar";
 import NikeHero from "./components/NikeHero";
@@ -27,28 +27,123 @@ const HomeLanding = () => (
     </>
 );
 
+// 🔒 Gatekeeper: Blocks unauthenticated users and sends them to /login
+const ProtectedRoute = ({ children }) => {
+    const { authToken } = useShop();
+    const location = useLocation();
+
+    if (!authToken) {
+        return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    }
+
+    return children;
+};
+
+// Inner App Content (allows useShop and useLocation inside ShopProvider)
+const MainAppContent = () => {
+    const { authToken } = useShop();
+    const location = useLocation();
+    const isLoginPage = location.pathname === "/login";
+
+    return (
+        <div className="NikeApp">
+            <ScrollToTop />
+
+            {/* Only show Navbar if logged in and not on login page */}
+            {!isLoginPage && authToken && <NikeNavbar />}
+
+            <Routes>
+                {/* Public Login Route (redirects to Home if already authenticated) */}
+                <Route
+                    path="/login"
+                    element={authToken ? <Navigate to="/" replace /> : <AuthPage />}
+                />
+
+                {/* 🔒 Protected Store Routes */}
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <HomeLanding />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/cart"
+                    element={
+                        <ProtectedRoute>
+                            <CartPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/wishlist"
+                    element={
+                        <ProtectedRoute>
+                            <WishlistPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/checkout"
+                    element={
+                        <ProtectedRoute>
+                            <CheckoutPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/orders"
+                    element={
+                        <ProtectedRoute>
+                            <OrdersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/product/:productId"
+                    element={
+                        <ProtectedRoute>
+                            <SingleProductPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/:categoryType"
+                    element={
+                        <ProtectedRoute>
+                            <CategoryPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+
+            {/* Only show Footer & Newsletter when authenticated and outside of /login */}
+            {!isLoginPage && authToken && (
+                <>
+                    <NikeNewsletter />
+                    <NikeFooter />
+                </>
+            )}
+        </div>
+    );
+};
+
 function App() {
     return (
         <ShopProvider>
-            <div className="NikeApp">
-                <ScrollToTop />
-                <NikeNavbar />
-
-                <Routes>
-                    <Route path="/" element={<HomeLanding />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/login" element={<AuthPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/orders" element={<OrdersPage />} />
-                    <Route path="/product/:productId" element={<SingleProductPage />} />
-                    <Route path="/:categoryType" element={<CategoryPage />} />
-                </Routes>
-
-                <NikeNewsletter />
-                <NikeFooter />
-            </div>
+            <MainAppContent />
         </ShopProvider>
     );
 }

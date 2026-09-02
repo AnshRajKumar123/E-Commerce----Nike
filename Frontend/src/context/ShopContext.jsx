@@ -4,16 +4,19 @@ import { allProductsData } from "../assets/assets";
 const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
+    // --- Cart State ---
     const [cartItems, setCartItems] = useState(() => {
         const saved = localStorage.getItem("nike_cart");
         return saved ? JSON.parse(saved) : [];
     });
 
+    // --- Wishlist State ---
     const [wishlistItems, setWishlistItems] = useState(() => {
         const saved = localStorage.getItem("nike_wishlist");
         return saved ? JSON.parse(saved) : [allProductsData[0], allProductsData[1]];
     });
 
+    // --- User Profile State ---
     const [userProfile, setUserProfile] = useState(() => {
         const saved = localStorage.getItem("nike_user_profile");
         return saved
@@ -21,12 +24,18 @@ export const ShopProvider = ({ children }) => {
             : { fullName: "", email: "", phone: "", address: "", city: "", postalCode: "" };
     });
 
-    // Orders History State
+    // --- JWT Auth Token State ---
+    const [authToken, setAuthToken] = useState(() => {
+        return localStorage.getItem("nike_auth_token") || "";
+    });
+
+    // --- Order History State ---
     const [orders, setOrders] = useState(() => {
         const saved = localStorage.getItem("nike_orders");
         return saved ? JSON.parse(saved) : [];
     });
 
+    // --- LocalStorage Sync Effects ---
     useEffect(() => {
         localStorage.setItem("nike_cart", JSON.stringify(cartItems));
     }, [cartItems]);
@@ -43,11 +52,52 @@ export const ShopProvider = ({ children }) => {
         localStorage.setItem("nike_orders", JSON.stringify(orders));
     }, [orders]);
 
+    useEffect(() => {
+        if (authToken) {
+            localStorage.setItem("nike_auth_token", authToken);
+        } else {
+            localStorage.removeItem("nike_auth_token");
+        }
+    }, [authToken]);
+
+    // --- Authentication Handlers ---
+    const loginAuthUser = (userData, token) => {
+        const formattedProfile = {
+            fullName: userData.name || userData.fullName || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            address: userData.address || "",
+            city: userData.city || "",
+            postalCode: userData.postalCode || "",
+        };
+        setUserProfile(formattedProfile);
+        setAuthToken(token);
+        localStorage.setItem("nike_user_profile", JSON.stringify(formattedProfile));
+        localStorage.setItem("nike_auth_token", token);
+    };
+
+    const logoutAuthUser = () => {
+        setUserProfile({
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            city: "",
+            postalCode: "",
+        });
+        setAuthToken("");
+        localStorage.removeItem("nike_user_profile");
+        localStorage.removeItem("nike_auth_token");
+    };
+
     const saveProfile = (details) => setUserProfile(details);
 
+    // --- Cart Handlers ---
     const addToCart = (product, size = 8, qty = 1) => {
         setCartItems((prev) => {
-            const existing = prev.find((item) => item.id === product.id && item.selectedSize === size);
+            const existing = prev.find(
+                (item) => item.id === product.id && item.selectedSize === size
+            );
             if (existing) {
                 return prev.map((item) =>
                     item.id === product.id && item.selectedSize === size
@@ -66,7 +116,9 @@ export const ShopProvider = ({ children }) => {
         }
         setCartItems((prev) =>
             prev.map((item) =>
-                item.id === id && item.selectedSize === size ? { ...item, quantity: newQty } : item
+                item.id === id && item.selectedSize === size
+                    ? { ...item, quantity: newQty }
+                    : item
             )
         );
     };
@@ -82,19 +134,22 @@ export const ShopProvider = ({ children }) => {
         localStorage.removeItem("nike_cart");
     };
 
+    // --- Wishlist Handlers ---
     const toggleWishlist = (product) => {
         setWishlistItems((prev) => {
             const exists = prev.some((item) => item.id === product.id);
-            return exists ? prev.filter((item) => item.id !== product.id) : [...prev, product];
+            return exists
+                ? prev.filter((item) => item.id !== product.id)
+                : [...prev, product];
         });
     };
 
     const isInWishlist = (id) => wishlistItems.some((item) => item.id === id);
 
-    // 🌟 Order Creation with Random 4-7 Days Delivery Math
+    // --- Order History & Real-Time Math Tracking Handlers ---
     const placeOrder = (orderData) => {
         const now = Date.now();
-        // Random days between 4 and 7
+        // Random days delivery window between 4 and 7 days
         const randomDays = Math.floor(Math.random() * 4) + 4;
         const estimatedDeliveryTime = now + randomDays * 24 * 60 * 60 * 1000;
 
@@ -115,7 +170,6 @@ export const ShopProvider = ({ children }) => {
         return newOrder;
     };
 
-    // 🌟 Cancel Individual Product Inside an Order
     const cancelOrderItem = (orderId, itemId, itemSize) => {
         setOrders((prev) =>
             prev.map((ord) => {
@@ -133,27 +187,38 @@ export const ShopProvider = ({ children }) => {
         );
     };
 
-    const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    // --- Aggregated Financials ---
+    const cartTotal = cartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    );
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
         <ShopContext.Provider
             value={{
+                // Cart
                 cartItems,
-                wishlistItems,
-                userProfile,
-                orders,
-                saveProfile,
                 addToCart,
                 updateQuantity,
                 removeFromCart,
                 clearCart,
-                toggleWishlist,
-                isInWishlist,
-                placeOrder,
-                cancelOrderItem,
                 cartTotal,
                 cartCount,
+                // Wishlist
+                wishlistItems,
+                toggleWishlist,
+                isInWishlist,
+                // Authentication & Profile
+                authToken,
+                userProfile,
+                loginAuthUser,
+                logoutAuthUser,
+                saveProfile,
+                // Orders
+                orders,
+                placeOrder,
+                cancelOrderItem,
             }}
         >
             {children}
