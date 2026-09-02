@@ -286,7 +286,7 @@
     width: 370px;
     background-color: #fafafa;
     color: #1a1a1a;
-    padding: 2.2rem 2.2rem 3rem 2.2rem;
+    padding: 2.2rem 2.2rem 2.8rem 2.2rem;
     position: relative;
     z-index: 10;
     margin-top: -12px;
@@ -294,11 +294,21 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
     box-sizing: border-box;
     transition: transform 0.4s ease, opacity 0.4s ease;
+
+    --mask-size: 14px;
+    --mask-pattern: conic-gradient(from -45deg at bottom, #000 90deg, #0000 0);
+    -webkit-mask: var(--mask-pattern) 50% / var(--mask-size) 100%;
+    mask: var(--mask-pattern) 50% / var(--mask-size) 100%;
 }
 
 .POSThermalReceiptPaper.torn-effect {
     transform: translateY(20px) rotate(-2deg);
     opacity: 0.95;
+}
+
+/* Remove the separate bottom pseudo element entirely */
+.SawtoothTearEdge {
+    display: none;
 }
 
 /* Header & Logo */

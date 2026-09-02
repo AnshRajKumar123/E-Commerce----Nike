@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import "../styles/CheckoutPage.css";
+import { nikeGeneral } from "../assets/assets";
 
 const CheckoutPage = () => {
     const location = useLocation();
@@ -285,13 +286,7 @@ const CheckoutPage = () => {
                                     <p>DIGITAL OFFICIAL RECEIPT</p>
                                 </div>
                                 <div className="ReceiptBrandLogo">
-                                    <svg
-                                        className="ReceiptSwoosh"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M21.707 5.293c-.201-.201-.482-.284-.758-.225l-16 3.5c-.381.083-.667.404-.698.793-.031.39.199.749.563.882l5.772 2.108-2.88 5.76c-.19.381-.097.844.225 1.122.321.278.789.297 1.132.046l12-8.5c.307-.217.439-.617.324-.972-.115-.355-.443-.604-.816-.604h-.008l-7.394.09 9.289-3.251c.321-.112.545-.399.569-.738.024-.34-.143-.655-.42-.811z" />
-                                    </svg>
+                                    <img src={nikeGeneral.WebLogo} />
                                 </div>
                             </div>
 
