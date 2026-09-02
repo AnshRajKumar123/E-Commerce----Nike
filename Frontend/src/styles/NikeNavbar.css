@@ -236,6 +236,7 @@
 
 .TripleDotBtn {
     font-size: 20px;
+    border: none;
 }
 
 .TripleDotBtn.active-menu {

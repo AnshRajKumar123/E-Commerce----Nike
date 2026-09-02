@@ -7,7 +7,7 @@ import { nikeGeneral } from "../assets/assets";
 const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { cartItems, clearCart, userProfile } = useShop();
+    const { cartItems, clearCart, userProfile, placeOrder } = useShop();
 
     // Active checkout ledger state
     const [activeCheckoutData, setActiveCheckoutData] = useState(
@@ -25,7 +25,7 @@ const CheckoutPage = () => {
     // Snapshot state dedicated to the thermal receipt
     const [receiptSnapshot, setReceiptSnapshot] = useState(null);
 
-    // Form inputs state
+    // Form inputs state (defaults to saved profile if available, else empty)
     const [shippingInfo, setShippingInfo] = useState({
         fullName: userProfile?.fullName || "",
         email: userProfile?.email || "",
@@ -46,16 +46,26 @@ const CheckoutPage = () => {
     const handleProcessPayment = (e) => {
         e.preventDefault();
 
-        // 1. Snapshot the order details for the receipt
-        setReceiptSnapshot({
+        // 1. Snapshot order details for the thermal receipt
+        const snapshot = {
             ...activeCheckoutData,
             clientName: shippingInfo.fullName || "GUEST",
-        });
+        };
+        setReceiptSnapshot(snapshot);
 
-        // 2. Clear global cart & storage
+        // 2. Persist order into global order history (with random 4-7 days dynamic tracking)
+        if (placeOrder) {
+            placeOrder({
+                cartItems: activeCheckoutData.cartItems,
+                shippingInfo,
+                financials: activeCheckoutData,
+            });
+        }
+
+        // 3. Clear global cart & storage
         clearCart();
 
-        // 3. Reset form inputs
+        // 4. Reset checkout form inputs
         setShippingInfo({
             fullName: "",
             email: "",
@@ -66,7 +76,7 @@ const CheckoutPage = () => {
             paymentMethod: "Card",
         });
 
-        // 4. Reset checkout summary ledger
+        // 5. Reset checkout summary ledger
         setActiveCheckoutData({
             cartItems: [],
             subtotal: 0,
@@ -77,7 +87,7 @@ const CheckoutPage = () => {
             grandTotal: 0,
         });
 
-        // 5. Display the thermal receipt
+        // 6. Open thermal receipt modal
         setShowReceipt(true);
     };
 
@@ -103,7 +113,7 @@ const CheckoutPage = () => {
     return (
         <main className="CheckoutPageWrapper">
             <div className="CheckoutContainer">
-                {/* LEFT: SHIPPING FORM */}
+                {/* LEFT: SHIPPING & BILLING FORM */}
                 <div className="CheckoutFormColumn">
                     <div className="CheckoutCard">
                         <div className="StepHeader">

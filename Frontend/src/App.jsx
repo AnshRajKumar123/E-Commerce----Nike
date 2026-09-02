@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { ShopProvider } from "./context/ShopContext";
+import ScrollToTop from "./components/ScrollToTop";
 import NikeNavbar from "./components/NikeNavbar";
 import NikeHero from "./components/NikeHero";
 import NikeSpotlight from "./components/NikeSpotlight";
@@ -29,6 +30,7 @@ function App() {
     return (
         <ShopProvider>
             <div className="NikeApp">
+                <ScrollToTop />
                 <NikeNavbar />
 
                 <Routes>
