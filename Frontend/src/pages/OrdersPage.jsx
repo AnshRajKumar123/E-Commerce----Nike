@@ -16,8 +16,11 @@ const OrdersPage = () => {
 
     // Calculate real-time delivery status based on elapsed percentage of 4-7 days
     const computeOrderStatus = (order) => {
-        const totalDuration = order.estimatedDeliveryTime - order.createdAt;
-        const elapsed = currentTime - order.createdAt;
+        const createdMs = typeof order.createdAt === "string" ? new Date(order.createdAt).getTime() : order.createdAt;
+        const estDeliveryMs = typeof order.estimatedDeliveryTime === "string" ? new Date(order.estimatedDeliveryTime).getTime() : order.estimatedDeliveryTime;
+
+        const totalDuration = (estDeliveryMs && createdMs) ? (estDeliveryMs - createdMs) : 5 * 24 * 60 * 60 * 1000;
+        const elapsed = currentTime - createdMs;
         const progressPercent = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
 
         let stage = 1; // 1: Order Confirmed, 2: Shipped, 3: Out for Delivery, 4: Delivered
@@ -34,14 +37,15 @@ const OrdersPage = () => {
             statusLabel = "In Transit / Shipped";
         }
 
-        const remainingMs = Math.max(0, order.estimatedDeliveryTime - currentTime);
+        const remainingMs = Math.max(0, estDeliveryMs - currentTime);
         const remainingDays = Math.ceil(remainingMs / (1000 * 60 * 60 * 24));
 
-        return { stage, statusLabel, progressPercent, remainingDays };
+        return { stage, statusLabel, progressPercent, remainingDays, createdMs, estDeliveryMs };
     };
 
     const handleCancel = (orderId, item) => {
-        const confirm = window.confirm(`Cancel "${item.title}" from order #${orderId}?`);
+        const itemTitle = item.title || item.name || "Selected Item";
+        const confirm = window.confirm(`Cancel "${itemTitle}" from order #${orderId}?`);
         if (confirm) {
             cancelOrderItem(orderId, item.id, item.selectedSize);
         }
@@ -54,19 +58,19 @@ const OrdersPage = () => {
                     <span className="SectionCategoryTag">ORDER HISTORY</span>
                     <h1 className="OrdersHeading">Your Purchases & Live Tracking</h1>
                 </div>
-                <Link to="/new" className="ContinueShoppingLink">
+                <Link to="/" className="ContinueShoppingLink">
                     <i className="bx bx-arrow-back"></i> Explore More Drops
                 </Link>
             </div>
 
-            {orders.length === 0 ? (
+            {(!orders || orders.length === 0) ? (
                 <div className="EmptyOrdersCard">
                     <div className="EmptyOrdersIcon">
                         <i className="bx bx-package"></i>
                     </div>
                     <h2>No Orders Placed Yet</h2>
                     <p>You haven't ordered any pairs yet. Explore our latest drops and check out to view live tracking.</p>
-                    <Link to="/new" className="ShopDropsCTA">
+                    <Link to="/" className="ShopDropsCTA">
                         <span>Shop New Releases</span>
                         <i className="bx bx-right-arrow-alt"></i>
                     </Link>
@@ -74,7 +78,8 @@ const OrdersPage = () => {
             ) : (
                 <div className="OrdersStream">
                     {orders.map((order) => {
-                        const { stage, statusLabel, remainingDays } = computeOrderStatus(order);
+                        const { stage, statusLabel, remainingDays, createdMs } = computeOrderStatus(order);
+                        const totalFigure = order.financials?.grandTotal || order.financials?.total || 0;
 
                         return (
                             <div key={order.orderId} className="OrderCardBlock">
@@ -82,12 +87,12 @@ const OrdersPage = () => {
                                 <div className="OrderMetaStrip">
                                     <div className="OrderInfoCol">
                                         <span className="MetaLabel">ORDER PLACED</span>
-                                        <strong>{new Date(order.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</strong>
+                                        <strong>{new Date(createdMs).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</strong>
                                     </div>
 
                                     <div className="OrderInfoCol">
                                         <span className="MetaLabel">TOTAL AMOUNT</span>
-                                        <strong>₹{order.financials?.grandTotal?.toLocaleString("en-IN") || "0"}</strong>
+                                        <strong>₹{Number(totalFigure).toLocaleString("en-IN")}</strong>
                                     </div>
 
                                     <div className="OrderInfoCol">
@@ -115,28 +120,36 @@ const OrdersPage = () => {
                                         <strong>{statusLabel}</strong>
                                     </div>
 
-                                    <span className="DeliveryEstimateDate">
-                                        {stage === 4
-                                            ? "Order Delivered"
-                                            : `Arriving in ${remainingDays} day${remainingDays > 1 ? "s" : ""} (Calculated: ${order.totalDays}-Day Express)`}
-                                    </span>
+                                    <div className="OrderStatusMetaTags">
+                                        {order.paymentDetails?.razorpayPaymentId && (
+                                            <span className="RazorpayBadge">
+                                                <i className="bx bx-check-shield"></i> Paid via Razorpay
+                                            </span>
+                                        )}
+                                        <span className="DeliveryEstimateDate">
+                                            {stage === 4
+                                                ? "Order Delivered"
+                                                : `Arriving in ~${remainingDays} day${remainingDays > 1 ? "s" : ""} (${order.totalDays || 5}-Day Express)`}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Itemized Products in Order */}
                                 <div className="OrderItemsCollection">
                                     {order.items.map((item) => {
                                         const isCancelled = item.status === "Cancelled";
+                                        const itemName = item.title || item.name || "Nike Footwear";
 
                                         return (
                                             <div key={`${item.id}-${item.selectedSize}`} className={`OrderItemUnit ${isCancelled ? "item-cancelled" : ""}`}>
                                                 <img
-                                                    src={item.images?.[0] || item.image}
-                                                    alt={item.title}
+                                                    src={item.images?.[0] || item.image || "/placeholder.png"}
+                                                    alt={itemName}
                                                     className="OrderItemThumb"
                                                 />
 
                                                 <div className="ItemDataDeck">
-                                                    <h4 className="ItemName">{item.title}</h4>
+                                                    <h4 className="ItemName">{itemName}</h4>
                                                     <span className="ItemSubData">
                                                         Category: {item.categoryLabel || "Footwear"} | Size: UK {item.selectedSize} | Qty: {item.quantity}
                                                     </span>
@@ -188,6 +201,11 @@ const OrdersPage = () => {
                             <div>
                                 <h2>Package Tracking</h2>
                                 <p>Tracking ID: <strong>{activeTrackingOrder.orderId}</strong></p>
+                                {activeTrackingOrder.paymentDetails?.razorpayPaymentId && (
+                                    <small style={{ color: "var(--text-muted)", fontSize: "11px" }}>
+                                        Txn ID: {activeTrackingOrder.paymentDetails.razorpayPaymentId}
+                                    </small>
+                                )}
                             </div>
                             <button
                                 type="button"
@@ -200,7 +218,7 @@ const OrdersPage = () => {
 
                         {/* Stepper Node Visuals */}
                         {(() => {
-                            const { stage, remainingDays, statusLabel } = computeOrderStatus(activeTrackingOrder);
+                            const { stage, remainingDays, estDeliveryMs, createdMs } = computeOrderStatus(activeTrackingOrder);
 
                             return (
                                 <div className="TrackingBody">
@@ -211,7 +229,7 @@ const OrdersPage = () => {
                                             <h4>
                                                 {stage === 4
                                                     ? "Package Delivered Successfully"
-                                                    : `${remainingDays} Days Remaining (${new Date(activeTrackingOrder.estimatedDeliveryTime).toLocaleDateString("en-GB", { day: "numeric", month: "short" })})`}
+                                                    : `${remainingDays} Days Remaining (${new Date(estDeliveryMs).toLocaleDateString("en-GB", { day: "numeric", month: "short" })})`}
                                             </h4>
                                         </div>
                                     </div>
@@ -222,7 +240,7 @@ const OrdersPage = () => {
                                             <div className="StepCircle"><i className="bx bx-check"></i></div>
                                             <div className="StepDetails">
                                                 <strong>Order Confirmed</strong>
-                                                <small>{new Date(activeTrackingOrder.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</small>
+                                                <small>{new Date(createdMs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</small>
                                             </div>
                                         </div>
 
@@ -270,7 +288,11 @@ const OrdersPage = () => {
                                         <i className="bx bx-map-pin"></i>
                                         <div>
                                             <strong>Delivery Destination:</strong>
-                                            <p>{activeTrackingOrder.shippingInfo?.address}, {activeTrackingOrder.shippingInfo?.city} - {activeTrackingOrder.shippingInfo?.postalCode}</p>
+                                            <p>
+                                                {activeTrackingOrder.shippingInfo?.address},{" "}
+                                                {activeTrackingOrder.shippingInfo?.city} -{" "}
+                                                {activeTrackingOrder.shippingInfo?.postalCode}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
-import "../styles/CheckoutPage.css";
 import { nikeGeneral } from "../assets/assets";
+import "../styles/CheckoutPage.css";
 
 const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { cartItems, clearCart, userProfile, placeOrder } = useShop();
+    const {
+        cartItems,
+        clearCart,
+        userProfile,
+        authToken,
+        appendNewOrder,
+    } = useShop();
 
     // Active checkout ledger state
     const [activeCheckoutData, setActiveCheckoutData] = useState(
@@ -22,10 +28,29 @@ const CheckoutPage = () => {
         }
     );
 
+    // Keep active checkout updated if user didn't pass state via navigate
+    useEffect(() => {
+        if (!location.state && cartItems.length > 0) {
+            const sub = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            const tax = Math.round(sub * 0.05);
+            const delivery = sub > 1500 ? 0 : 150;
+            setActiveCheckoutData({
+                cartItems,
+                subtotal: sub,
+                discount: 0,
+                taxAmount: tax,
+                tip: 0,
+                deliveryFee: delivery,
+                grandTotal: sub + tax + delivery,
+            });
+        }
+    }, [cartItems, location.state]);
+
     // Snapshot state dedicated to the thermal receipt
     const [receiptSnapshot, setReceiptSnapshot] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    // Form inputs state (defaults to saved profile if available, else empty)
+    // Form inputs state (pre-filled from MongoDB userProfile)
     const [shippingInfo, setShippingInfo] = useState({
         fullName: userProfile?.fullName || "",
         email: userProfile?.email || "",
@@ -36,6 +61,21 @@ const CheckoutPage = () => {
         paymentMethod: "Card",
     });
 
+    // Auto-sync whenever userProfile loads from MongoDB
+    useEffect(() => {
+        if (userProfile) {
+            setShippingInfo((prev) => ({
+                ...prev,
+                fullName: userProfile.fullName || prev.fullName,
+                email: userProfile.email || prev.email,
+                phone: userProfile.phone || prev.phone,
+                address: userProfile.address || prev.address,
+                city: userProfile.city || prev.city,
+                postalCode: userProfile.postalCode || prev.postalCode,
+            }));
+        }
+    }, [userProfile]);
+
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptTorn, setReceiptTorn] = useState(false);
 
@@ -43,52 +83,116 @@ const CheckoutPage = () => {
         setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
     };
 
-    const handleProcessPayment = (e) => {
+    // 🌟 Razorpay Gateway Flow & MongoDB Order Persistence
+    const handleProcessPayment = async (e) => {
         e.preventDefault();
 
-        // 1. Snapshot order details for the thermal receipt
-        const snapshot = {
-            ...activeCheckoutData,
-            clientName: shippingInfo.fullName || "GUEST",
-        };
-        setReceiptSnapshot(snapshot);
-
-        // 2. Persist order into global order history (with random 4-7 days dynamic tracking)
-        if (placeOrder) {
-            placeOrder({
-                cartItems: activeCheckoutData.cartItems,
-                shippingInfo,
-                financials: activeCheckoutData,
-            });
+        if (activeCheckoutData.cartItems.length === 0) {
+            alert("Your shopping bag is empty!");
+            return;
         }
 
-        // 3. Clear global cart & storage
-        clearCart();
+        if (!window.Razorpay) {
+            alert("Razorpay SDK failed to load. Please check your internet connection.");
+            return;
+        }
 
-        // 4. Reset checkout form inputs
-        setShippingInfo({
-            fullName: "",
-            email: "",
-            phone: "",
-            address: "",
-            city: "",
-            postalCode: "",
-            paymentMethod: "Card",
-        });
+        setIsProcessing(true);
 
-        // 5. Reset checkout summary ledger
-        setActiveCheckoutData({
-            cartItems: [],
-            subtotal: 0,
-            discount: 0,
-            taxAmount: 0,
-            tip: 0,
-            deliveryFee: 0,
-            grandTotal: 0,
-        });
+        const orderPayload = {
+            cartItems: activeCheckoutData.cartItems,
+            shippingInfo,
+            financials: activeCheckoutData,
+        };
 
-        // 6. Open thermal receipt modal
-        setShowReceipt(true);
+        try {
+            // 1. Create Razorpay order on backend
+            const initRes = await fetch("/api/orders/razorpay-init", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: JSON.stringify({ amount: activeCheckoutData.grandTotal }),
+            });
+
+            const initData = await initRes.json();
+            if (!initRes.ok) {
+                throw new Error(initData.message || "Could not initialize payment gateway");
+            }
+
+            // 2. Open Razorpay payment gateway
+            const options = {
+                key: initData.keyId,
+                amount: initData.order.amount,
+                currency: "INR",
+                name: "NIKE SPORTSWEAR",
+                description: "Order Checkout Payment",
+                image: nikeGeneral?.WebLogo,
+                order_id: initData.order.id,
+                prefill: {
+                    name: shippingInfo.fullName,
+                    email: shippingInfo.email,
+                    contact: shippingInfo.phone,
+                },
+                theme: { color: "#0c1e3d" },
+                handler: async function (response) {
+                    try {
+                        // 3. Verify signature and save to MongoDB
+                        const verifyRes = await fetch("/api/orders/verify-and-save", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${authToken}`,
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderData: orderPayload,
+                            }),
+                        });
+
+                        const verifyData = await verifyRes.json();
+                        if (!verifyRes.ok) {
+                            throw new Error(verifyData.message || "Payment signature verification failed");
+                        }
+
+                        // 4. Update UI & App State
+                        appendNewOrder(verifyData.order);
+                        clearCart();
+
+                        setReceiptSnapshot({
+                            ...activeCheckoutData,
+                            clientName: shippingInfo.fullName || "ATHLETE",
+                            orderId: verifyData.order.orderId,
+                            txnId: response.razorpay_payment_id,
+                        });
+
+                        setShowReceipt(true);
+                    } catch (verifyErr) {
+                        alert(verifyErr.message);
+                    } finally {
+                        setIsProcessing(false);
+                    }
+                },
+                modal: {
+                    ondismiss: function () {
+                        setIsProcessing(false);
+                    },
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on("payment.failed", function (resp) {
+                alert(`Payment Failed: ${resp.error.description}`);
+                setIsProcessing(false);
+            });
+            rzp.open();
+        } catch (err) {
+            alert(err.message || "Checkout transaction encountered an error.");
+            setIsProcessing(false);
+        }
     };
 
     const handleTearReceipt = () => {
@@ -97,7 +201,7 @@ const CheckoutPage = () => {
 
     const handleCopyReceipt = () => {
         if (!receiptSnapshot) return;
-        const text = `NIKE DIGITAL OFFICIAL RECEIPT\nClient: ${receiptSnapshot.clientName}\nTotal: ₹${receiptSnapshot.grandTotal.toLocaleString("en-IN")}\nTXN-7451188122-BM`;
+        const text = `NIKE DIGITAL OFFICIAL RECEIPT\nClient: ${receiptSnapshot.clientName}\nOrder ID: ${receiptSnapshot.orderId}\nPayment ID: ${receiptSnapshot.txnId}\nTotal: ₹${receiptSnapshot.grandTotal.toLocaleString("en-IN")}`;
         navigator.clipboard.writeText(text);
         alert("Receipt details copied to clipboard!");
     };
@@ -201,11 +305,11 @@ const CheckoutPage = () => {
                     <div className="CheckoutCard">
                         <div className="StepHeader">
                             <span className="StepNumber">2</span>
-                            <h3>Payment Method</h3>
+                            <h3>Select Gateway Preference</h3>
                         </div>
 
                         <div className="PaymentMethodsGrid">
-                            {["Card", "UPI / QR", "Apple Pay", "NetBanking"].map((method) => (
+                            {["Razorpay (Cards/UPI/NetBanking)", "Cash On Delivery"].map((method) => (
                                 <button
                                     type="button"
                                     key={method}
@@ -216,11 +320,9 @@ const CheckoutPage = () => {
                                     }
                                 >
                                     <i
-                                        className={`bx ${method === "Card"
-                                                ? "bx-credit-card"
-                                                : method === "UPI / QR"
-                                                    ? "bx-qr-scan"
-                                                    : "bx-wallet"
+                                        className={`bx ${method.includes("Razorpay")
+                                                ? "bx-credit-card-front"
+                                                : "bx-money"
                                             }`}
                                     ></i>
                                     <span>{method}</span>
@@ -248,10 +350,10 @@ const CheckoutPage = () => {
                                     >
                                         <img
                                             src={item.images?.[0] || item.image}
-                                            alt={item.title}
+                                            alt={item.title || item.name}
                                         />
                                         <div className="MiniItemMeta">
-                                            <strong>{item.title}</strong>
+                                            <strong>{item.title || item.name}</strong>
                                             <small>
                                                 Qty: {item.quantity} | UK {item.selectedSize}
                                             </small>
@@ -279,10 +381,12 @@ const CheckoutPage = () => {
                                     </span>
                                 </div>
                             )}
-                            <div className="BreakdownRow">
-                                <span>Gratuity (Tip)</span>
-                                <span>+₹{activeCheckoutData.tip}</span>
-                            </div>
+                            {activeCheckoutData.tip > 0 && (
+                                <div className="BreakdownRow">
+                                    <span>Gratuity (Tip)</span>
+                                    <span>+₹{activeCheckoutData.tip}</span>
+                                </div>
+                            )}
                             <div className="BreakdownRow">
                                 <span>Tax (5% GST)</span>
                                 <span>
@@ -312,11 +416,15 @@ const CheckoutPage = () => {
                             type="submit"
                             form="checkout-form"
                             className="PayNowButton"
-                            disabled={activeCheckoutData.grandTotal === 0 && !showReceipt}
+                            disabled={
+                                isProcessing ||
+                                (activeCheckoutData.grandTotal === 0 && !showReceipt)
+                            }
                         >
                             <span>
-                                Authorize & Pay ₹
-                                {activeCheckoutData.grandTotal.toLocaleString("en-IN")}
+                                {isProcessing
+                                    ? "Connecting Razorpay..."
+                                    : `Pay ₹${activeCheckoutData.grandTotal.toLocaleString("en-IN")}`}
                             </span>
                             <i className="bx bx-check-shield"></i>
                         </button>
@@ -339,7 +447,7 @@ const CheckoutPage = () => {
                                     <p>DIGITAL OFFICIAL RECEIPT</p>
                                 </div>
                                 <div className="ReceiptBrandLogo">
-                                    <img src={nikeGeneral.WebLogo} alt="Nike Logo" />
+                                    <img src={nikeGeneral?.WebLogo || "/logo.png"} alt="Nike Logo" />
                                 </div>
                             </div>
 
@@ -348,7 +456,9 @@ const CheckoutPage = () => {
                                     <span className="ClientTag">
                                         CLIENT: {receiptSnapshot.clientName.toUpperCase()}
                                     </span>
-                                    <div className="CardNumberMask">Visa-•••• 8842</div>
+                                    <div className="CardNumberMask">
+                                        ORDER: {receiptSnapshot.orderId || "NK-OFFICIAL"}
+                                    </div>
                                 </div>
 
                                 <div className="PaidStampBadge">
@@ -359,7 +469,7 @@ const CheckoutPage = () => {
 
                             <div className="ReceiptHeroPrice">
                                 <h1>₹{receiptSnapshot.grandTotal.toLocaleString("en-IN")}</h1>
-                                <p>{currentDate} | INVOICE PAID</p>
+                                <p>{currentDate} | INVOICE PAID VIA RAZORPAY</p>
                             </div>
 
                             <div className="ReceiptDottedLine"></div>
@@ -371,7 +481,7 @@ const CheckoutPage = () => {
                                         className="ReceiptItemRow"
                                     >
                                         <span className="ItemQtyAndTitle">
-                                            {item.quantity}X {item.title} (UK {item.selectedSize})
+                                            {item.quantity}X {item.title || item.name} (UK {item.selectedSize})
                                         </span>
                                         <span className="ItemPriceFigures">
                                             ₹{(item.price * item.quantity).toLocaleString("en-IN")}
@@ -389,16 +499,18 @@ const CheckoutPage = () => {
                                 </div>
                                 {receiptSnapshot.discount > 0 && (
                                     <div className="FinRow">
-                                        <span>Discount (Promo)</span>
+                                        <span>Discount</span>
                                         <span>
                                             -₹{receiptSnapshot.discount.toLocaleString("en-IN")}
                                         </span>
                                     </div>
                                 )}
-                                <div className="FinRow">
-                                    <span>Gratuity (Tip)</span>
-                                    <span>+₹{receiptSnapshot.tip}</span>
-                                </div>
+                                {receiptSnapshot.tip > 0 && (
+                                    <div className="FinRow">
+                                        <span>Gratuity (Tip)</span>
+                                        <span>+₹{receiptSnapshot.tip}</span>
+                                    </div>
+                                )}
                                 <div className="FinRow">
                                     <span>Tax (5%)</span>
                                     <span>
@@ -417,7 +529,7 @@ const CheckoutPage = () => {
                             </div>
 
                             <p className="ReceiptAppreciationText">
-                                THANK YOU FOR PARTNERING WITH NIKE ATHLETICS!
+                                THANK YOU FOR SHOPPING WITH NIKE!
                             </p>
 
                             <div className="ReceiptBarcodeContainer">
@@ -429,13 +541,15 @@ const CheckoutPage = () => {
                                     <span></span><span></span><span></span><span></span>
                                     <span></span><span></span><span></span><span></span>
                                 </div>
-                                <span className="BarcodeCodeNumber">TXN-7451188122-BM</span>
+                                <span className="BarcodeCodeNumber">
+                                    {receiptSnapshot.txnId || "TXN-7451188122-BM"}
+                                </span>
                             </div>
                         </div>
 
                         <div className="ReceiptBottomControls">
                             <h2>Payment Successful</h2>
-                            <p>You're all set—now let the receipt roll!</p>
+                            <p>Your order has been placed and saved to your account.</p>
 
                             <div className="ReceiptActionDeck">
                                 <button
@@ -462,7 +576,7 @@ const CheckoutPage = () => {
                                     onClick={handleCopyReceipt}
                                 >
                                     <i className="bx bx-copy"></i>
-                                    <span>Copy</span>
+                                    <span>Copy Info</span>
                                 </button>
                             </div>
 
@@ -471,10 +585,10 @@ const CheckoutPage = () => {
                                 className="DoneShoppingBtn"
                                 onClick={() => {
                                     setShowReceipt(false);
-                                    navigate("/");
+                                    navigate("/orders");
                                 }}
                             >
-                                Return to Store Home
+                                View Order in Tracking Dashboard
                             </button>
                         </div>
                     </div>
