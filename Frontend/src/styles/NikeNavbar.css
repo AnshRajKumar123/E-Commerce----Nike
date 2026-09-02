@@ -83,6 +83,11 @@
     color: var(--accent-light-blue);
 }
 
+.NikeLogoAnchor img {
+    width: 50px;
+    height: 50px;
+}
+
 .NikeSwooshIcon {
     width: 58px;
     height: 28px;
