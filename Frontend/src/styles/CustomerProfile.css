@@ -231,3 +231,37 @@
         grid-template-columns: 1fr;
     }
 }
+
+.SidebarDivider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 8px 0;
+}
+
+.SignOutActionBtn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.SignOutActionBtn i {
+    font-size: 18px;
+    color: #ef4444;
+}
+
+.SignOutActionBtn:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}

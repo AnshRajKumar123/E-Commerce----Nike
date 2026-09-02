@@ -1,22 +1,43 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import "../styles/CustomerProfile.css";
 
 const ProfilePage = () => {
-    const { userProfile, saveProfile } = useShop();
+    const { userProfile, saveProfile, logoutAuthUser } = useShop();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState(userProfile);
     const [savedToast, setSavedToast] = useState(false);
+    const [saving, setSaving] = useState(false);
+
+    // Sync inputs whenever the context updates from MongoDB
+    useEffect(() => {
+        setFormData(userProfile);
+    }, [userProfile]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        saveProfile(formData);
-        setSavedToast(true);
-        setTimeout(() => setSavedToast(false), 3000);
+        setSaving(true);
+        try {
+            await saveProfile(formData);
+            setSavedToast(true);
+            setTimeout(() => setSavedToast(false), 3000);
+        } catch (err) {
+            alert("Failed to save profile to database. Please check your connection.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSignOut = () => {
+        if (window.confirm("Are you sure you want to sign out of your Nike Member account?")) {
+            logoutAuthUser();
+            navigate("/login");
+        }
     };
 
     return (
@@ -24,7 +45,7 @@ const ProfilePage = () => {
             {savedToast && (
                 <div className="ProfileToast">
                     <i className="bx bxs-check-circle"></i>
-                    <span>Delivery details saved! They will auto-fill at checkout.</span>
+                    <span>Delivery details saved to your account!</span>
                 </div>
             )}
 
@@ -46,6 +67,9 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="FastLinksCard">
+                        <Link to="/orders" className="SideActionLink">
+                            <i className="bx bx-package"></i> Order History
+                        </Link>
                         <Link to="/cart" className="SideActionLink">
                             <i className="bx bx-shopping-bag"></i> My Bag
                         </Link>
@@ -55,6 +79,17 @@ const ProfilePage = () => {
                         <Link to="/checkout" className="SideActionLink">
                             <i className="bx bx-credit-card"></i> Proceed to Checkout
                         </Link>
+
+                        <div className="SidebarDivider"></div>
+
+                        <button
+                            type="button"
+                            className="SideActionLink SignOutActionBtn"
+                            onClick={handleSignOut}
+                        >
+                            <i className="bx bx-log-out"></i>
+                            <span>Sign Out</span>
+                        </button>
                     </div>
                 </div>
 
@@ -81,8 +116,9 @@ const ProfilePage = () => {
                                     name="email"
                                     placeholder="e.g. athlete@nike.com"
                                     value={formData.email}
-                                    onChange={handleChange}
-                                    required
+                                    disabled
+                                    title="Email cannot be changed directly"
+                                    style={{ opacity: 0.7, cursor: "not-allowed" }}
                                 />
                             </div>
                         </div>
@@ -137,8 +173,8 @@ const ProfilePage = () => {
                             />
                         </div>
 
-                        <button type="submit" className="SaveProfileBtn">
-                            <span>Save Delivery Profile</span>
+                        <button type="submit" className="SaveProfileBtn" disabled={saving}>
+                            <span>{saving ? "Saving to Database..." : "Save Delivery Profile"}</span>
                             <i className="bx bx-save"></i>
                         </button>
                     </form>

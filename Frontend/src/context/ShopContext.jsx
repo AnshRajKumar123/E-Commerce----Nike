@@ -17,11 +17,13 @@ export const ShopProvider = ({ children }) => {
     });
 
     // --- User Profile State ---
-    const [userProfile, setUserProfile] = useState(() => {
-        const saved = localStorage.getItem("nike_user_profile");
-        return saved
-            ? JSON.parse(saved)
-            : { fullName: "", email: "", phone: "", address: "", city: "", postalCode: "" };
+    const [userProfile, setUserProfile] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
     });
 
     // --- JWT Auth Token State ---
@@ -35,7 +37,44 @@ export const ShopProvider = ({ children }) => {
         return saved ? JSON.parse(saved) : [];
     });
 
-    // --- LocalStorage Sync Effects ---
+    // Fetch Profile From MongoDB on App Mount or Token Change
+    useEffect(() => {
+        const fetchProfileFromDB = async () => {
+            if (!authToken) return;
+
+            try {
+                const response = await fetch("/api/users/profile", {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                        Accept: "application/json",
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.user) {
+                        setUserProfile({
+                            fullName: data.user.name || "",
+                            email: data.user.email || "",
+                            phone: data.user.phone || "",
+                            address: data.user.address || "",
+                            city: data.user.city || "",
+                            postalCode: data.user.postalCode || "",
+                        });
+                    }
+                } else if (response.status === 401) {
+                    // Token expired or invalid
+                    logoutAuthUser();
+                }
+            } catch (err) {
+                console.error("Failed to load user profile from database:", err);
+            }
+        };
+
+        fetchProfileFromDB();
+    }, [authToken]);
+
+    // Sync Cart, Wishlist, Orders, Token
     useEffect(() => {
         localStorage.setItem("nike_cart", JSON.stringify(cartItems));
     }, [cartItems]);
@@ -43,10 +82,6 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem("nike_wishlist", JSON.stringify(wishlistItems));
     }, [wishlistItems]);
-
-    useEffect(() => {
-        localStorage.setItem("nike_user_profile", JSON.stringify(userProfile));
-    }, [userProfile]);
 
     useEffect(() => {
         localStorage.setItem("nike_orders", JSON.stringify(orders));
@@ -72,7 +107,6 @@ export const ShopProvider = ({ children }) => {
         };
         setUserProfile(formattedProfile);
         setAuthToken(token);
-        localStorage.setItem("nike_user_profile", JSON.stringify(formattedProfile));
         localStorage.setItem("nike_auth_token", token);
     };
 
@@ -86,11 +120,42 @@ export const ShopProvider = ({ children }) => {
             postalCode: "",
         });
         setAuthToken("");
-        localStorage.removeItem("nike_user_profile");
         localStorage.removeItem("nike_auth_token");
     };
 
-    const saveProfile = (details) => setUserProfile(details);
+    // --- Save Profile Directly To MongoDB ---
+    const saveProfile = async (details) => {
+        setUserProfile(details);
+
+        if (!authToken) return;
+
+        try {
+            const response = await fetch("/api/users/profile", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${authToken}`,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    name: details.fullName,
+                    phone: details.phone,
+                    address: details.address,
+                    city: details.city,
+                    postalCode: details.postalCode,
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to update profile");
+            }
+            return data;
+        } catch (err) {
+            console.error("Error saving profile to database:", err);
+            throw err;
+        }
+    };
 
     // --- Cart Handlers ---
     const addToCart = (product, size = 8, qty = 1) => {
@@ -146,10 +211,9 @@ export const ShopProvider = ({ children }) => {
 
     const isInWishlist = (id) => wishlistItems.some((item) => item.id === id);
 
-    // --- Order History & Real-Time Math Tracking Handlers ---
+    // --- Orders ---
     const placeOrder = (orderData) => {
         const now = Date.now();
-        // Random days delivery window between 4 and 7 days
         const randomDays = Math.floor(Math.random() * 4) + 4;
         const estimatedDeliveryTime = now + randomDays * 24 * 60 * 60 * 1000;
 
@@ -162,7 +226,7 @@ export const ShopProvider = ({ children }) => {
             financials: orderData.financials,
             items: orderData.cartItems.map((item) => ({
                 ...item,
-                status: "Confirmed", // "Confirmed" | "Shipped" | "Delivered" | "Cancelled"
+                status: "Confirmed",
             })),
         };
 
@@ -187,7 +251,6 @@ export const ShopProvider = ({ children }) => {
         );
     };
 
-    // --- Aggregated Financials ---
     const cartTotal = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
@@ -197,7 +260,6 @@ export const ShopProvider = ({ children }) => {
     return (
         <ShopContext.Provider
             value={{
-                // Cart
                 cartItems,
                 addToCart,
                 updateQuantity,
@@ -205,17 +267,14 @@ export const ShopProvider = ({ children }) => {
                 clearCart,
                 cartTotal,
                 cartCount,
-                // Wishlist
                 wishlistItems,
                 toggleWishlist,
                 isInWishlist,
-                // Authentication & Profile
                 authToken,
                 userProfile,
                 loginAuthUser,
                 logoutAuthUser,
                 saveProfile,
-                // Orders
                 orders,
                 placeOrder,
                 cancelOrderItem,
