@@ -1,0 +1,589 @@
+/* ==========================================================================
+   💳 CHECKOUT SCREEN & FORM STYLING
+   ========================================================================== */
+.CheckoutPageWrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 48px 6rem 48px;
+}
+
+.CheckoutContainer {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.CheckoutCard,
+.CheckoutSummaryCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 2.2rem;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 1.8rem;
+}
+
+.StepHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.StepNumber {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.StepHeader h3 {
+    font-family: var(--Font3);
+    font-size: 19px;
+    color: var(--accent-dark-blue);
+    margin: 0;
+}
+
+.FormGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.FormGroupSpan2 {
+    grid-column: span 2;
+}
+
+.FormGrid label {
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.FormGrid input {
+    width: 100%;
+    height: 44px;
+    background: var(--accent-light-soft);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 13.5px;
+    color: var(--text-main);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.FormGrid input:focus {
+    border-color: var(--accent-light-blue);
+    background: #ffffff;
+}
+
+.PaymentMethodsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.PaymentMethodPill {
+    height: 48px;
+    border-radius: 12px;
+    background: var(--accent-light-soft);
+    border: 1.5px solid var(--border-light);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-dark-blue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.PaymentMethodPill.selected {
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    border-color: var(--accent-dark-blue);
+}
+
+/* Order Summary Column */
+.OrderMiniItemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 1.2rem 0;
+}
+
+.MiniItemRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.MiniItemRow img {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--accent-light-soft);
+    object-fit: contain;
+    padding: 4px;
+}
+
+.MiniItemMeta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.MiniItemMeta strong {
+    font-size: 13.5px;
+    color: var(--accent-dark-blue);
+}
+
+.MiniItemMeta small {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.MiniItemRow span {
+    font-weight: 800;
+    font-size: 13.5px;
+}
+
+.LedgerBreakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.BreakdownRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    color: var(--text-muted);
+}
+
+.DiscountText {
+    color: #16a34a;
+}
+
+.GrandTotalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--accent-dark-blue);
+    padding-top: 4px;
+}
+
+.FinalAmount {
+    font-family: var(--Font3);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+}
+
+.PayNowButton {
+    width: 100%;
+    height: 52px;
+    border-radius: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 1.5rem;
+    box-shadow: 0 8px 25px rgba(12, 30, 61, 0.25);
+    transition: all 0.25s ease;
+}
+
+.PayNowButton:hover {
+    background: var(--accent-light-blue);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   🧾 REALISTIC 3D POS DISPENSER THERMAL RECEIPT MODAL (SCREENSHOT ACCURATE)
+   ========================================================================== */
+
+.ReceiptOverlayBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.POSReceiptStage {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: receiptRollOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes receiptRollOut {
+    from {
+        transform: translateY(-40px) scale(0.94);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* 3D Black POS Printer Top Dispenser Box */
+.POSPrinterDispenserCap {
+    width: 290px;
+    height: 54px;
+    background: linear-gradient(180deg, #2b3342 0%, #0d121c 100%);
+    border-radius: 30px 30px 16px 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 20;
+}
+
+.PrinterSlit {
+    width: 220px;
+    height: 7px;
+    background: #000000;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+/* Dispensed Thermal White Paper Body */
+.POSThermalReceiptPaper {
+    width: 370px;
+    background-color: #fafafa;
+    color: #1a1a1a;
+    padding: 2.2rem 2.2rem 3rem 2.2rem;
+    position: relative;
+    z-index: 10;
+    margin-top: -12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+    box-sizing: border-box;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.POSThermalReceiptPaper.torn-effect {
+    transform: translateY(20px) rotate(-2deg);
+    opacity: 0.95;
+}
+
+/* Header & Logo */
+.ReceiptHeaderSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+}
+
+.ReceiptBrandText h2 {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    color: #1e3a8a;
+    margin: 0;
+}
+
+.ReceiptBrandText p {
+    font-size: 10px;
+    color: #64748b;
+    letter-spacing: 1px;
+    margin: 2px 0 0 0;
+    font-weight: 700;
+}
+
+.ReceiptBrandLogo {
+    color: #1e3a8a;
+}
+
+.ReceiptSwoosh {
+    width: 38px;
+    height: 22px;
+}
+
+/* Client & Red Stamped "PAID" */
+.ReceiptClientAndStamp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ClientTag {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: 0.5px;
+    display: block;
+}
+
+.CardNumberMask {
+    font-size: 11px;
+    color: #6b7280;
+    font-family: monospace;
+}
+
+/* 🔴 RED STAMPED "PAID" STAMP */
+.PaidStampBadge {
+    border: 2px dashed #dc2626;
+    border-radius: 8px;
+    padding: 3px 8px;
+    text-align: center;
+    transform: rotate(-7deg);
+    color: #dc2626;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.StampTitle {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.StampDate {
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* Big Price Header */
+.ReceiptHeroPrice h1 {
+    font-size: 32px;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.ReceiptHeroPrice p {
+    font-size: 9.5px;
+    color: #64748b;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    margin: 4px 0 0 0;
+}
+
+.ReceiptDottedLine {
+    border-top: 1.5px dotted #cbd5e1;
+    margin: 14px 0;
+}
+
+.ReceiptSolidLine {
+    border-top: 1.5px solid #0f172a;
+    margin: 14px 0;
+}
+
+/* Itemized Lines */
+.ReceiptItemsBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ReceiptItemRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e293b;
+    font-family: monospace;
+}
+
+.ItemPriceFigures {
+    font-weight: 800;
+}
+
+/* Financial Ledger */
+.ReceiptFinancialLedger {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.FinRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #475569;
+    font-family: monospace;
+}
+
+.ReceiptGrandTotalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    font-weight: 900;
+    color: #0f172a;
+    font-family: monospace;
+}
+
+.ReceiptGrandTotalRow strong {
+    font-size: 16px;
+}
+
+.ReceiptAppreciationText {
+    text-align: center;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.8px;
+    margin: 16px 0 12px 0;
+}
+
+/* Barcode */
+.ReceiptBarcodeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.BarcodeLines {
+    display: flex;
+    align-items: center;
+    gap: 2.5px;
+    height: 38px;
+}
+
+.BarcodeLines span {
+    display: inline-block;
+    height: 100%;
+    background: #000000;
+}
+
+.BarcodeLines span:nth-child(2n) {
+    width: 3px;
+}
+
+.BarcodeLines span:nth-child(2n+1) {
+    width: 1.5px;
+}
+
+.BarcodeLines span:nth-child(3n) {
+    width: 4px;
+}
+
+.BarcodeLines span:nth-child(4n) {
+    width: 2px;
+}
+
+.BarcodeCodeNumber {
+    font-family: monospace;
+    font-size: 9.5px;
+    color: #64748b;
+    letter-spacing: 2px;
+}
+
+/* Sawtooth Serrated Tear Edge Bottom */
+.SawtoothTearEdge {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background-repeat: repeat-x;
+    background-size: 14px 10px;
+    background-image: radial-gradient(circle at 7px 0px, transparent 6px, #fafafa 6.5px);
+}
+
+/* Bottom Controls */
+.ReceiptBottomControls {
+    margin-top: 1.8rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ReceiptBottomControls h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+}
+
+.ReceiptBottomControls p {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0 0 1.2rem 0;
+}
+
+.ReceiptActionDeck {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.PosActionBtn {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.PosActionBtn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+}
+
+.DoneShoppingBtn {
+    background: none;
+    border: none;
+    color: var(--accent-light-blue);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .CheckoutContainer {
+        grid-template-columns: 1fr;
+    }
+}

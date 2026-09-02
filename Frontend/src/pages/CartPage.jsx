@@ -8,6 +8,8 @@ const CartPage = () => {
     const [promoCode, setPromoCode] = useState("");
     const [discount, setDiscount] = useState(0);
     const [promoApplied, setPromoApplied] = useState(false);
+    const [tip, setTip] = useState(50); // Default gratitude tip
+    const [customTip, setCustomTip] = useState("");
     const navigate = useNavigate();
 
     const handleApplyPromo = (e) => {
@@ -16,12 +18,35 @@ const CartPage = () => {
             setDiscount(cartTotal * 0.1);
             setPromoApplied(true);
         } else {
-            alert("Invalid promo code. Use 'NIKE10' for 10% off!");
+            alert("Invalid code. Use 'NIKE10' for 10% off!");
         }
     };
 
-    const estimatedDelivery = cartTotal > 14000 || cartItems.length === 0 ? 0 : 750;
-    const grandTotal = Math.max(0, cartTotal - discount + estimatedDelivery);
+    const handleCustomTipChange = (e) => {
+        const val = Number(e.target.value);
+        setCustomTip(e.target.value);
+        setTip(val >= 0 ? val : 0);
+    };
+
+    const deliveryFee = cartTotal > 14000 || cartItems.length === 0 ? 0 : 750;
+    const taxableAmount = Math.max(0, cartTotal - discount);
+    const taxAmount = taxableAmount * 0.05; // 5% Tax
+    const grandTotal = Math.round(taxableAmount + taxAmount + deliveryFee + Number(tip));
+
+    const handleProceedToCheckout = () => {
+        // Pass financial ledger state into checkout
+        navigate("/checkout", {
+            state: {
+                cartItems,
+                subtotal: cartTotal,
+                discount,
+                taxAmount,
+                tip: Number(tip),
+                deliveryFee,
+                grandTotal
+            }
+        });
+    };
 
     return (
         <main className="CartPageWrapper">
@@ -73,7 +98,7 @@ const CartPage = () => {
 
                                     <div className="ItemSpecs">
                                         <span className="SpecTag">Size: <strong>UK {item.selectedSize}</strong></span>
-                                        <span className="SpecTag">Colorway: <strong>Original</strong></span>
+                                        <span className="SpecTag">Colorway: <strong>Original Edition</strong></span>
                                     </div>
 
                                     <div className="ItemControlsRow">
@@ -130,62 +155,128 @@ const CartPage = () => {
                         ))}
                     </div>
 
-                    {/* RIGHT: ORDER SUMMARY LEDGER */}
+                    {/* RIGHT: TIP BOX & ORDER SUMMARY */}
                     <div className="CartSummarySidebar">
+
+                        {/* 🌟 DELIVERY GRATITUDE TIP BOX (PLACED ABOVE SUMMARY) */}
+                        <div className="GratitudeTipCard">
+                            <div className="TipHeaderRow">
+                                <div className="TipTitleBlock">
+                                    <i className="bx bx-cycling TipRiderIcon"></i>
+                                    <div>
+                                        <h4>Delivery Partner Tip</h4>
+                                        <p>Show appreciation for quick dispatch</p>
+                                    </div>
+                                </div>
+                                {tip > 0 && <span className="ActiveTipPill">₹{tip} added</span>}
+                            </div>
+
+                            <div className="TipPresetsGrid">
+                                {[30, 50, 100, 150].map((amount) => (
+                                    <button
+                                        key={amount}
+                                        type="button"
+                                        className={`TipPresetBtn ${tip === amount && customTip === "" ? "selected" : ""}`}
+                                        onClick={() => {
+                                            setTip(amount);
+                                            setCustomTip("");
+                                        }}
+                                    >
+                                        ₹{amount}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="CustomTipSlot">
+                                <input
+                                    type="number"
+                                    placeholder="Custom tip amount (₹)"
+                                    value={customTip}
+                                    onChange={handleCustomTipChange}
+                                    min="0"
+                                />
+                                {tip > 0 && (
+                                    <button
+                                        type="button"
+                                        className="ClearTipBtn"
+                                        onClick={() => {
+                                            setTip(0);
+                                            setCustomTip("");
+                                        }}
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ORDER SUMMARY CARD */}
                         <div className="SummaryCard">
                             <h2 className="SummaryTitle">Order Summary</h2>
 
                             <div className="SummaryRow">
-                                <span>Subtotal</span>
+                                <span>Bag Subtotal</span>
                                 <strong>₹{cartTotal.toLocaleString("en-IN")}</strong>
-                            </div>
-
-                            <div className="SummaryRow">
-                                <span>Estimated Delivery</span>
-                                <strong>{estimatedDelivery === 0 ? "FREE" : `₹${estimatedDelivery}`}</strong>
                             </div>
 
                             {promoApplied && (
                                 <div className="SummaryRow DiscountRow">
-                                    <span>Promo Discount (10%)</span>
+                                    <span>Promo Code (NIKE10)</span>
                                     <strong>-₹{discount.toLocaleString("en-IN")}</strong>
                                 </div>
                             )}
 
+                            <div className="SummaryRow">
+                                <span>Standard Delivery</span>
+                                <strong>{deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}</strong>
+                            </div>
+
+                            <div className="SummaryRow">
+                                <span>Gratitude Tip</span>
+                                <strong>{tip > 0 ? `₹${tip}` : "₹0"}</strong>
+                            </div>
+
+                            {/* 🌟 5% TAX LEDGER */}
+                            <div className="SummaryRow">
+                                <span>GST / Taxes (5%)</span>
+                                <strong>₹{taxAmount.toLocaleString("en-IN")}</strong>
+                            </div>
+
                             <div className="SummaryDivider"></div>
 
                             <div className="SummaryRow TotalRow">
-                                <span>Total Amount</span>
+                                <span>Grand Total</span>
                                 <span className="TotalFigure">₹{grandTotal.toLocaleString("en-IN")}</span>
                             </div>
 
-                            {/* Promo Code Form */}
+                            {/* Promo Form */}
                             <form className="PromoInputGroup" onSubmit={handleApplyPromo}>
                                 <input
                                     type="text"
-                                    placeholder="Enter Promo (e.g. NIKE10)"
+                                    placeholder="Promo code (NIKE10)"
                                     value={promoCode}
                                     onChange={(e) => setPromoCode(e.target.value)}
                                 />
                                 <button type="submit">Apply</button>
                             </form>
 
-                            <button className="CheckoutButton">
-                                <span>Member Checkout</span>
-                                <i className="bx bx-lock-alt"></i>
+                            <button className="CheckoutButton" onClick={handleProceedToCheckout}>
+                                <span>Proceed to Checkout</span>
+                                <i className="bx bx-right-arrow-alt"></i>
                             </button>
 
                             <div className="SecurityAssurances">
                                 <div className="AssuranceItem">
                                     <i className="bx bx-check-shield"></i>
-                                    <span>Secure 256-Bit SSL Encrypted Checkout</span>
+                                    <span>256-Bit Encrypted Secure Payment</span>
                                 </div>
                                 <div className="AssuranceItem">
-                                    <i className="bx bx-refresh"></i>
-                                    <span>Standard 30-Day Free Return Policy</span>
+                                    <i className="bx bx-package"></i>
+                                    <span>Official Verified Nike Dispatch</span>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             )}
