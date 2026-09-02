@@ -34,17 +34,25 @@ const AuthPage = () => {
         try {
             const response = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
                 body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Authentication failed");
+            const text = await response.text();
+            let data;
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (err) {
+                throw new Error(`Server returned status ${response.status}`);
             }
 
-            // Save user & token to context & localStorage
+            if (!response.ok) {
+                throw new Error(data.message || `Request failed with status ${response.status}`);
+            }
+
             if (loginAuthUser) {
                 loginAuthUser(data.user, data.token);
             }
