@@ -1,0 +1,476 @@
+/* ==========================================================================
+   📦 ORDER HISTORY & LIVE TRACKING STYLES
+   ========================================================================== */
+.OrdersPageWrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2.5rem 48px 6rem 48px;
+}
+
+.OrdersHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1.5rem;
+}
+
+.OrdersHeading {
+    font-family: var(--Font3);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    margin: 4px 0 0 0;
+}
+
+/* Empty Orders */
+.EmptyOrdersCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.EmptyOrdersIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-light-soft);
+    color: var(--accent-dark-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin-bottom: 1.5rem;
+}
+
+.ShopDropsCTA {
+    padding: 13px 32px;
+    border-radius: 30px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.ShopDropsCTA:hover {
+    background: var(--accent-light-blue);
+    transform: translateY(-2px);
+}
+
+/* Order Cards Stream */
+.OrdersStream {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.OrderCardBlock {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+}
+
+.OrderMetaStrip {
+    background: var(--accent-light-soft);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.OrderInfoCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.OrderInfoCol.RightCol {
+    align-items: flex-end;
+}
+
+.MetaLabel {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+}
+
+.OrderInfoCol strong {
+    font-size: 13.5px;
+    color: var(--accent-dark-blue);
+}
+
+.TrackOrderCTA {
+    margin-top: 4px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+    border: none;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.TrackOrderCTA:hover {
+    background: var(--accent-light-blue);
+}
+
+.OrderStatusProgressBanner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.StatusBadgeIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.StatusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.StatusDot.Active {
+    background: #0284c7;
+    box-shadow: 0 0 8px #0284c7;
+}
+
+.StatusDot.Delivered {
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.DeliveryEstimateDate {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Item Collection in Card */
+.OrderItemsCollection {
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.OrderItemUnit {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+}
+
+.OrderItemUnit:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.OrderItemUnit.item-cancelled {
+    opacity: 0.55;
+}
+
+.OrderItemThumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    background: var(--accent-light-soft);
+    object-fit: contain;
+    padding: 6px;
+}
+
+.ItemDataDeck {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ItemName {
+    font-family: var(--Font3);
+    font-size: 16px;
+    color: var(--accent-dark-blue);
+    margin: 0;
+}
+
+.ItemSubData {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.ItemPricePoint {
+    font-size: 14px;
+    color: var(--accent-dark-blue);
+}
+
+.ItemActionsDeck {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.CancelProductBtn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #ef4444;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.CancelProductBtn:hover:not(:disabled) {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.CancelProductBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.CancelledBadge {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ViewProductAgain {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--accent-dark-blue);
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   🌟 TRACKING MODAL & 4-STAGE STEPPER
+   ========================================================================== */
+.TrackingModalBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    padding: 1.5rem;
+}
+
+.TrackingModalContent {
+    width: 100%;
+    max-width: 540px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    padding: 2.2rem;
+    animation: modalPop 0.25s ease both;
+}
+
+.TrackingModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.TrackingModalHeader h2 {
+    font-family: var(--Font3);
+    font-size: 20px;
+    color: var(--accent-dark-blue);
+    margin: 0 0 4px 0;
+}
+
+.TrackingModalHeader p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.CloseTrackBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent-light-soft);
+    color: var(--accent-dark-blue);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.EstimatedArrivalBanner {
+    background: var(--accent-light-soft);
+    padding: 14px 18px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+}
+
+.EstimatedArrivalBanner i {
+    font-size: 28px;
+    color: var(--accent-dark-blue);
+}
+
+.EstimatedArrivalBanner span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.EstimatedArrivalBanner h4 {
+    font-family: var(--Font3);
+    font-size: 15px;
+    color: var(--accent-dark-blue);
+    margin: 2px 0 0 0;
+}
+
+/* Stepper */
+.TrackingTimelineStepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.TimelineStep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 80px;
+}
+
+.StepCircle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.TimelineStep.completed .StepCircle {
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+}
+
+.StepDetails strong {
+    display: block;
+    font-size: 11px;
+    color: var(--accent-dark-blue);
+}
+
+.StepDetails small {
+    font-size: 9.5px;
+    color: var(--text-muted);
+}
+
+.StepConnectorLine {
+    flex: 1;
+    height: 3px;
+    background: #e2e8f0;
+    margin: 0 4px 24px 4px;
+    transition: background 0.3s ease;
+}
+
+.StepConnectorLine.active {
+    background: var(--accent-dark-blue);
+}
+
+.RecipientAddressCard {
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.RecipientAddressCard i {
+    font-size: 20px;
+    color: var(--accent-light-blue);
+}
+
+.RecipientAddressCard p {
+    color: var(--text-muted);
+    margin: 2px 0 0 0;
+}
+
+@media (max-width: 768px) {
+    .OrdersPageWrapper {
+        padding: 1.5rem 20px 4rem 20px;
+    }
+
+    .OrderMetaStrip {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .OrderInfoCol.RightCol {
+        align-items: flex-start;
+    }
+
+    .OrderItemUnit {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ItemActionsDeck {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

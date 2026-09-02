@@ -6,34 +6,25 @@ const ShopContext = createContext();
 export const ShopProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(() => {
         const saved = localStorage.getItem("nike_cart");
-        return saved
-            ? JSON.parse(saved)
-            : [
-                { ...allProductsData[0], quantity: 1, selectedSize: 8 },
-                { ...allProductsData[1], quantity: 2, selectedSize: 9 }
-            ];
+        return saved ? JSON.parse(saved) : [];
     });
 
     const [wishlistItems, setWishlistItems] = useState(() => {
         const saved = localStorage.getItem("nike_wishlist");
-        return saved
-            ? JSON.parse(saved)
-            : [allProductsData[2], allProductsData[3]];
+        return saved ? JSON.parse(saved) : [allProductsData[0], allProductsData[1]];
     });
 
-    // User Profile State (empty default)
     const [userProfile, setUserProfile] = useState(() => {
         const saved = localStorage.getItem("nike_user_profile");
         return saved
             ? JSON.parse(saved)
-            : {
-                fullName: "",
-                email: "",
-                phone: "",
-                address: "",
-                city: "",
-                postalCode: ""
-            };
+            : { fullName: "", email: "", phone: "", address: "", city: "", postalCode: "" };
+    });
+
+    // Orders History State
+    const [orders, setOrders] = useState(() => {
+        const saved = localStorage.getItem("nike_orders");
+        return saved ? JSON.parse(saved) : [];
     });
 
     useEffect(() => {
@@ -48,15 +39,15 @@ export const ShopProvider = ({ children }) => {
         localStorage.setItem("nike_user_profile", JSON.stringify(userProfile));
     }, [userProfile]);
 
-    const saveProfile = (details) => {
-        setUserProfile(details);
-    };
+    useEffect(() => {
+        localStorage.setItem("nike_orders", JSON.stringify(orders));
+    }, [orders]);
+
+    const saveProfile = (details) => setUserProfile(details);
 
     const addToCart = (product, size = 8, qty = 1) => {
         setCartItems((prev) => {
-            const existing = prev.find(
-                (item) => item.id === product.id && item.selectedSize === size
-            );
+            const existing = prev.find((item) => item.id === product.id && item.selectedSize === size);
             if (existing) {
                 return prev.map((item) =>
                     item.id === product.id && item.selectedSize === size
@@ -75,9 +66,7 @@ export const ShopProvider = ({ children }) => {
         }
         setCartItems((prev) =>
             prev.map((item) =>
-                item.id === id && item.selectedSize === size
-                    ? { ...item, quantity: newQty }
-                    : item
+                item.id === id && item.selectedSize === size ? { ...item, quantity: newQty } : item
             )
         );
     };
@@ -96,20 +85,55 @@ export const ShopProvider = ({ children }) => {
     const toggleWishlist = (product) => {
         setWishlistItems((prev) => {
             const exists = prev.some((item) => item.id === product.id);
-            if (exists) {
-                return prev.filter((item) => item.id !== product.id);
-            }
-            return [...prev, product];
+            return exists ? prev.filter((item) => item.id !== product.id) : [...prev, product];
         });
     };
 
     const isInWishlist = (id) => wishlistItems.some((item) => item.id === id);
 
-    const cartTotal = cartItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-    );
+    // 🌟 Order Creation with Random 4-7 Days Delivery Math
+    const placeOrder = (orderData) => {
+        const now = Date.now();
+        // Random days between 4 and 7
+        const randomDays = Math.floor(Math.random() * 4) + 4;
+        const estimatedDeliveryTime = now + randomDays * 24 * 60 * 60 * 1000;
 
+        const newOrder = {
+            orderId: "NK-" + Math.floor(100000 + Math.random() * 900000),
+            createdAt: now,
+            totalDays: randomDays,
+            estimatedDeliveryTime,
+            shippingInfo: orderData.shippingInfo,
+            financials: orderData.financials,
+            items: orderData.cartItems.map((item) => ({
+                ...item,
+                status: "Confirmed", // "Confirmed" | "Shipped" | "Delivered" | "Cancelled"
+            })),
+        };
+
+        setOrders((prev) => [newOrder, ...prev]);
+        return newOrder;
+    };
+
+    // 🌟 Cancel Individual Product Inside an Order
+    const cancelOrderItem = (orderId, itemId, itemSize) => {
+        setOrders((prev) =>
+            prev.map((ord) => {
+                if (ord.orderId !== orderId) return ord;
+                return {
+                    ...ord,
+                    items: ord.items.map((item) => {
+                        if (item.id === itemId && item.selectedSize === itemSize) {
+                            return { ...item, status: "Cancelled" };
+                        }
+                        return item;
+                    }),
+                };
+            })
+        );
+    };
+
+    const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
@@ -118,6 +142,7 @@ export const ShopProvider = ({ children }) => {
                 cartItems,
                 wishlistItems,
                 userProfile,
+                orders,
                 saveProfile,
                 addToCart,
                 updateQuantity,
@@ -125,8 +150,10 @@ export const ShopProvider = ({ children }) => {
                 clearCart,
                 toggleWishlist,
                 isInWishlist,
+                placeOrder,
+                cancelOrderItem,
                 cartTotal,
-                cartCount
+                cartCount,
             }}
         >
             {children}

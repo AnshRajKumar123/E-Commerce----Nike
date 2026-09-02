@@ -225,3 +225,87 @@
     color: var(--accent-dark-blue);
     cursor: pointer;
 }
+
+/* ==========================================================================
+   🌟 TRIPLE-DOT DROPDOWN MENU
+   ========================================================================== */
+.NavbarDropdownHub {
+    position: relative;
+    display: inline-block;
+}
+
+.TripleDotBtn {
+    font-size: 20px;
+}
+
+.TripleDotBtn.active-menu {
+    background: var(--accent-dark-blue);
+    color: #ffffff;
+}
+
+.DropdownFlyoutMenu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 230px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    box-shadow: 0 16px 36px rgba(12, 30, 61, 0.15);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10001;
+    animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dropdownPop {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.DropdownMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.DropdownMenuItem i {
+    font-size: 18px;
+    color: var(--accent-dark-blue);
+}
+
+.DropdownMenuItem:hover {
+    background: var(--accent-light-soft);
+    color: var(--accent-dark-blue);
+}
+
+.MenuCountPill {
+    margin-left: auto;
+    background: var(--accent-light-soft);
+    color: var(--accent-dark-blue);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.DropdownDivider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 6px 0;
+}
