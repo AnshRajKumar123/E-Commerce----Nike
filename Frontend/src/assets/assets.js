@@ -27,6 +27,12 @@ import Shoes_23 from "./images/Shoes_23.png";
 import Shoes_24 from "./images/Shoes_24.png";
 import Shoes_25 from "./images/Shoes_25.png";
 
+import WebLogo from "./WebImg/WebsiteLogo.png"
+
+export const nikeGeneral = {
+    WebLogo
+}
+
 // ==========================================
 // 🧭 NAVIGATION DATA
 // ==========================================

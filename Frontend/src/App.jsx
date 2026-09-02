@@ -14,33 +14,33 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 
 const HomeLanding = () => (
-  <>
-    <NikeHero />
-    <NikeSpotlight />
-    <NikeAboutTech />
-    <NikeCompanyValues />
-  </>
+    <>
+        <NikeHero />
+        <NikeSpotlight />
+        <NikeAboutTech />
+        <NikeCompanyValues />
+    </>
 );
 
 function App() {
-  return (
-    <ShopProvider>
-      <div className="NikeApp">
-        <NikeNavbar />
+    return (
+        <ShopProvider>
+            <div className="NikeApp">
+                <NikeNavbar />
 
-        <Routes>
-          <Route path="/" element={<HomeLanding />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
-          <Route path="/product/:productId" element={<SingleProductPage />} />
-          <Route path="/:categoryType" element={<CategoryPage />} />
-        </Routes>
+                <Routes>
+                    <Route path="/" element={<HomeLanding />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/product/:productId" element={<SingleProductPage />} />
+                    <Route path="/:categoryType" element={<CategoryPage />} />
+                </Routes>
 
-        <NikeNewsletter />
-        <NikeFooter />
-      </div>
-    </ShopProvider>
-  );
+                <NikeNewsletter />
+                <NikeFooter />
+            </div>
+        </ShopProvider>
+    );
 }
 
 export default App;
