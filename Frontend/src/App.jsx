@@ -13,6 +13,7 @@ import SingleProductPage from "./pages/SingleProductPage";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const HomeLanding = () => (
     <>
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/" element={<HomeLanding />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/product/:productId" element={<SingleProductPage />} />
                     <Route path="/:categoryType" element={<CategoryPage />} />

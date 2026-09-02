@@ -4,7 +4,6 @@ import { allProductsData } from "../assets/assets";
 const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
-    // Pre-fill with a couple of items so your UI renders active items immediately
     const [cartItems, setCartItems] = useState(() => {
         const saved = localStorage.getItem("nike_cart");
         return saved
@@ -22,6 +21,21 @@ export const ShopProvider = ({ children }) => {
             : [allProductsData[2], allProductsData[3]];
     });
 
+    // User Profile State (empty default)
+    const [userProfile, setUserProfile] = useState(() => {
+        const saved = localStorage.getItem("nike_user_profile");
+        return saved
+            ? JSON.parse(saved)
+            : {
+                fullName: "",
+                email: "",
+                phone: "",
+                address: "",
+                city: "",
+                postalCode: ""
+            };
+    });
+
     useEffect(() => {
         localStorage.setItem("nike_cart", JSON.stringify(cartItems));
     }, [cartItems]);
@@ -30,7 +44,14 @@ export const ShopProvider = ({ children }) => {
         localStorage.setItem("nike_wishlist", JSON.stringify(wishlistItems));
     }, [wishlistItems]);
 
-    // Cart Handlers
+    useEffect(() => {
+        localStorage.setItem("nike_user_profile", JSON.stringify(userProfile));
+    }, [userProfile]);
+
+    const saveProfile = (details) => {
+        setUserProfile(details);
+    };
+
     const addToCart = (product, size = 8, qty = 1) => {
         setCartItems((prev) => {
             const existing = prev.find(
@@ -67,7 +88,11 @@ export const ShopProvider = ({ children }) => {
         );
     };
 
-    // Wishlist Handlers
+    const clearCart = () => {
+        setCartItems([]);
+        localStorage.removeItem("nike_cart");
+    };
+
     const toggleWishlist = (product) => {
         setWishlistItems((prev) => {
             const exists = prev.some((item) => item.id === product.id);
@@ -92,9 +117,12 @@ export const ShopProvider = ({ children }) => {
             value={{
                 cartItems,
                 wishlistItems,
+                userProfile,
+                saveProfile,
                 addToCart,
                 updateQuantity,
                 removeFromCart,
+                clearCart,
                 toggleWishlist,
                 isInWishlist,
                 cartTotal,

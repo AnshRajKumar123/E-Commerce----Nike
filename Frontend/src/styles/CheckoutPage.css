@@ -261,7 +261,7 @@
 
 /* 3D Black POS Printer Top Dispenser Box */
 .POSPrinterDispenserCap {
-    width: 290px;
+    width: 430px;
     height: 54px;
     background: linear-gradient(180deg, #2b3342 0%, #0d121c 100%);
     border-radius: 30px 30px 16px 16px;
@@ -274,7 +274,7 @@
 }
 
 .PrinterSlit {
-    width: 220px;
+    width: 300px;
     height: 7px;
     background: #000000;
     border-radius: 6px;
@@ -329,9 +329,9 @@
     color: #1e3a8a;
 }
 
-.ReceiptSwoosh {
-    width: 38px;
-    height: 22px;
+.ReceiptBrandLogo img {
+    width: 40px;
+    height: 40px;
 }
 
 /* Client & Red Stamped "PAID" */
