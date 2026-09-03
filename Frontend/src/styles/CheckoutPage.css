@@ -110,6 +110,11 @@
     justify-content: center;
     gap: 6px;
     transition: all 0.2s ease;
+    padding: 0 10px;
+}
+
+.PaymentMethodPill i {
+    font-size: 18px;
 }
 
 .PaymentMethodPill.selected {
